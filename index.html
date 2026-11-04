@@ -36,7 +36,9 @@
 
     /* En-tête */
     header { display: flex; gap: 28px; align-items: center; margin-bottom: 16px; }
-    header img { width: 130px; height: 130px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
+    .avatar { position: relative; width: 130px; height: 130px; border-radius: 4px; overflow: hidden; flex-shrink: 0; background: var(--rule); }
+    .avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .8s ease; }
+    .avatar img.active { opacity: 1; }
     h1 { font-size: 2rem; font-weight: normal; }
     .role { color: var(--muted); }
     .links { margin-top: 8px; font-size: .95rem; }
@@ -104,7 +106,7 @@
       body { font-size: 17px; }
       .container { padding: 32px 16px; }
       header { flex-direction: column; align-items: flex-start; gap: 16px; }
-      header img { width: 110px; height: 110px; }
+      .avatar { width: 110px; height: 110px; }
       .entry { grid-template-columns: 1fr; gap: 0; }
       .pub { grid-template-columns: 1fr; gap: 12px; }
     }
@@ -114,13 +116,16 @@
   <div class="container">
 
     <header>
-      <!-- Remplace par ta photo : mets photo.jpg dans le dépôt et écris src="photo.jpg" -->
-      <img src="https://github.com/pacome-luton.png" alt="Photo de Pacôme Luton">
+      <!-- Pour ajouter une photo : mets-la dans profile/ (carrée, environ 400 px) et ajoute une ligne <img>. -->
+      <div class="avatar">
+        <img class="active" src="profile/profileSpeleo.jpg" alt="">
+        <img src="profile/profileArtif.jpg" alt="">
+      </div>
       <div>
         <h1>Pacôme Luton</h1>
         <div class="role">Doctorant en informatique graphique<br>Équipe <a href="https://team.inria.fr/maverick/">Maverick</a>, LJK, Grenoble</div>
         <div class="links">
-          <a href="mailto:pacome.luton@ens-lyon.fr">Email</a><a href="https://scholar.google.com/citations?user=IxrPG0kAAAAJ">Google Scholar</a><a href="https://github.com/pacome-luton">GitHub</a><a href="cv.pdf">CV</a>
+          <a href="mailto:pacome.luton@ens-lyon.fr">Email</a><a href="https://scholar.google.com/citations?user=IxrPG0kAAAAJ">Google Scholar</a>
         </div>
       </div>
     </header>
@@ -230,5 +235,18 @@
 
     <footer>© 2026 Pacôme Luton · Dernière mise à jour : novembre 2026</footer>
   </div>
+
+  <script>
+    // Alterne les photos de profil (sauf si le visiteur a demandé moins d'animations).
+    const photos = document.querySelectorAll('.avatar img');
+    if (photos.length > 1 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      let current = 0;
+      setInterval(() => {
+        photos[current].classList.remove('active');
+        current = (current + 1) % photos.length;
+        photos[current].classList.add('active');
+      }, 6000);
+    }
+  </script>
 </body>
 </html>
