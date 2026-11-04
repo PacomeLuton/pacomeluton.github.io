@@ -93,7 +93,7 @@
 
     /* Projets perso */
     .project + .project { margin-top: 28px; }
-    .project iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 1px solid var(--rule); border-radius: 4px; background: var(--rule); }
+    .project img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 4px; }
     .project .title { margin-top: 10px; font-weight: bold; font-size: 1.08rem; }
     .project .desc { font-size: .95rem; }
     .project .refs { margin-top: 6px; font-size: .9rem; }
@@ -214,9 +214,9 @@
     <!-- ========== Projets perso ========== -->
     <section id="projets">
       <h2>Projets perso</h2>
-      <!-- Pour chaque projet : copie un bloc .project. paused=true évite de lancer le shader au chargement de la page. -->
+      <!-- Pour chaque projet : copie un bloc .project. -->
       <article class="project">
-        <iframe src="https://www.shadertoy.com/embed/73tXRM?gui=true&amp;paused=true&amp;muteaudio=true" title="Space and Time : shader de trou noir de Schwarzschild" loading="lazy" allowfullscreen></iframe>
+        <a href="https://www.shadertoy.com/view/73tXRM"><img src="docs/space-and-time.jpg" alt="Trou noir entouré d'un anneau d'Einstein, avec une planète rougie par effet Doppler" width="1200" height="675" loading="lazy"></a>
         <div class="title">Space and Time</div>
         <p class="desc">Rendu temps réel d'un trou noir de Schwarzschild et de planètes en orbite, pour mettre en évidence les effets relativistes : courbure de la lumière, effets Doppler, contraction des longueurs, aberration, temps propre. Chaque effet s'active séparément.</p>
         <div class="refs">
