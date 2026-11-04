@@ -4,116 +4,190 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pacôme Luton</title>
-  <meta name="description" content="Page personnelle de Pacôme Luton">
+  <meta name="description" content="Page personnelle de Pacôme Luton, chercheur en informatique.">
   <style>
     :root {
-      --bg: #fafafa;
-      --text: #1f2328;
-      --muted: #59636e;
-      --accent: #0969da;
-      --card: #ffffff;
-      --border: #d1d9e0;
+      --bg: #ffffff;
+      --text: #222222;
+      --muted: #666666;
+      --rule: #e5e5e5;
+      --link: #1a5fb4;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #0d1117;
-        --text: #e6edf3;
-        --muted: #9198a1;
-        --accent: #4493f8;
-        --card: #161b22;
-        --border: #30363d;
+        --bg: #161616;
+        --text: #e6e6e6;
+        --muted: #9a9a9a;
+        --rule: #333333;
+        --link: #78aeed;
       }
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
       background: var(--bg);
       color: var(--text);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 18px;
       line-height: 1.6;
     }
-    .container { max-width: 760px; margin: 0 auto; padding: 48px 20px; }
-    header { text-align: center; margin-bottom: 48px; }
-    .avatar {
-      width: 120px; height: 120px; border-radius: 50%;
-      object-fit: cover; border: 3px solid var(--border); margin-bottom: 16px;
-    }
-    h1 { font-size: 2.2rem; }
-    .subtitle { color: var(--muted); font-size: 1.15rem; margin-top: 4px; }
-    nav { margin-top: 20px; display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
-    a { color: var(--accent); text-decoration: none; }
+    a { color: var(--link); text-decoration: none; }
     a:hover { text-decoration: underline; }
-    section { margin-bottom: 40px; }
+    .container { max-width: 760px; margin: 0 auto; padding: 56px 20px 40px; }
+
+    /* En-tête */
+    header { display: flex; gap: 28px; align-items: center; margin-bottom: 16px; }
+    header img { width: 130px; height: 130px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
+    h1 { font-size: 2rem; font-weight: normal; }
+    .role { color: var(--muted); }
+    .links { margin-top: 8px; font-size: .95rem; }
+    .links a + a::before { content: " · "; color: var(--muted); }
+
+    /* Sections */
+    section { margin-top: 44px; }
     h2 {
-      font-size: 1.3rem; margin-bottom: 16px; padding-bottom: 6px;
-      border-bottom: 1px solid var(--border);
+      font-size: 1.25rem; font-weight: normal; letter-spacing: .02em;
+      padding-bottom: 6px; margin-bottom: 16px; border-bottom: 1px solid var(--rule);
     }
-    .item {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 8px; padding: 16px 20px; margin-bottom: 12px;
+    p + p { margin-top: 12px; }
+    ul { padding-left: 20px; }
+    li + li { margin-top: 6px; }
+
+    /* Papers */
+    .paper { margin-bottom: 18px; }
+    .paper .title { font-weight: bold; }
+    .paper .meta { color: var(--muted); font-size: .95rem; }
+    .paper .me { text-decoration: underline; }
+    .paper .refs { font-size: .9rem; }
+    details { display: inline; }
+    summary { display: inline; color: var(--link); cursor: pointer; list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    pre {
+      margin-top: 6px; padding: 10px 12px; border: 1px solid var(--rule);
+      font-size: 13px; line-height: 1.45; overflow-x: auto;
     }
-    .item h3 { font-size: 1.05rem; }
-    .item .meta { color: var(--muted); font-size: 0.9rem; margin-bottom: 6px; }
-    .contact { list-style: none; display: grid; gap: 8px; }
-    footer { text-align: center; color: var(--muted); font-size: 0.85rem; margin-top: 48px; }
+
+    /* Historique */
+    .entry { display: grid; grid-template-columns: 130px 1fr; gap: 16px; margin-bottom: 14px; }
+    .entry .date { color: var(--muted); }
+    .entry .org { color: var(--muted); font-style: italic; }
+
+    footer {
+      margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--rule);
+      color: var(--muted); font-size: .85rem;
+    }
+
+    @media (max-width: 600px) {
+      body { font-size: 17px; }
+      .container { padding: 32px 16px; }
+      header { flex-direction: column; align-items: flex-start; gap: 16px; }
+      header img { width: 110px; height: 110px; }
+      .entry { grid-template-columns: 1fr; gap: 0; }
+    }
   </style>
 </head>
 <body>
   <div class="container">
+
     <header>
-      <!-- Remplace par ta photo (ex. photo.jpg dans le même dépôt) -->
-      <img class="avatar" src="https://github.com/pacome-luton.png" alt="Photo de Pacôme Luton">
-      <h1>Pacôme Luton</h1>
-      <p class="subtitle">Ton métier ici (ex. Développeur web, Ingénieur, Designer…)</p>
-      <nav>
-        <a href="#apropos">À propos</a>
-        <a href="#experience">Expérience</a>
-        <a href="#projets">Projets</a>
-        <a href="#contact">Contact</a>
-      </nav>
+      <!-- Remplace par ta photo : mets photo.jpg dans le dépôt et écris src="photo.jpg" -->
+      <img src="https://github.com/pacome-luton.png" alt="Photo de Pacôme Luton">
+      <div>
+        <h1>Pacôme Luton</h1>
+        <div class="role">Doctorant en informatique<br>Laboratoire XYZ, Université de Ville</div>
+        <div class="links">
+          <a href="mailto:prenom.nom@universite.fr">Email</a><a href="https://scholar.google.com/">Google Scholar</a><a href="https://dblp.org/">DBLP</a><a href="https://github.com/pacome-luton">GitHub</a><a href="cv.pdf">CV</a>
+        </div>
+      </div>
     </header>
 
-    <main>
-      <section id="apropos">
-        <h2>À propos</h2>
-        <p>
-          Quelques lignes pour te présenter : ce que tu fais, ce qui te motive,
-          tes domaines de compétence et ce que tu recherches.
-        </p>
-      </section>
+    <!-- ========== Intérêts de recherche ========== -->
+    <section id="recherche">
+      <h2>Intérêts de recherche</h2>
+      <p>
+        Je suis doctorant au Laboratoire XYZ, sous la direction de <a href="#">Prénom Nom</a>.
+        Mes travaux portent sur <strong>[ton sujet principal]</strong>, et plus précisément sur
+        [la question que tu cherches à résoudre].
+      </p>
+      <p>Mes principaux centres d'intérêt :</p>
+      <ul>
+        <li><strong>Thème n°1</strong> : une phrase de description.</li>
+        <li><strong>Thème n°2</strong> : une phrase de description.</li>
+        <li><strong>Thème n°3</strong> : une phrase de description.</li>
+      </ul>
+    </section>
 
-      <section id="experience">
-        <h2>Expérience</h2>
-        <div class="item">
-          <h3>Intitulé du poste · Entreprise</h3>
-          <p class="meta">2024 – aujourd'hui · Ville</p>
-          <p>Description courte de tes missions et réalisations.</p>
+    <!-- ========== Papers ========== -->
+    <section id="papers">
+      <h2>Papers</h2>
+
+      <div class="paper">
+        <div class="title">Titre de ton papier le plus récent</div>
+        <div class="meta"><span class="me">Pacôme Luton</span>, Co-Auteur A, Directeur B</div>
+        <div class="meta"><em>CONF 2026</em>, International Conference on Something</div>
+        <div class="refs">
+          [<a href="#">pdf</a>] [<a href="#">code</a>]
+          <details><summary>[bibtex]</summary><pre>@inproceedings{luton2026titre,
+  title     = {Titre de ton papier le plus récent},
+  author    = {Luton, Pacôme and A, Co-Auteur and B, Directeur},
+  booktitle = {International Conference on Something (CONF)},
+  year      = {2026}
+}</pre></details>
         </div>
-        <div class="item">
-          <h3>Intitulé du poste · Entreprise</h3>
-          <p class="meta">2021 – 2024 · Ville</p>
-          <p>Description courte de tes missions et réalisations.</p>
-        </div>
-      </section>
+      </div>
 
-      <section id="projets">
-        <h2>Projets</h2>
-        <div class="item">
-          <h3><a href="https://github.com/pacome-luton">Nom du projet</a></h3>
-          <p>Ce que fait le projet et les technologies utilisées.</p>
-        </div>
-      </section>
+      <div class="paper">
+        <div class="title">Titre d'un article de revue</div>
+        <div class="meta"><span class="me">Pacôme Luton</span>, Directeur B</div>
+        <div class="meta"><em>Journal of Something</em>, vol. 12, 2025</div>
+        <div class="refs">[<a href="#">pdf</a>]</div>
+      </div>
 
-      <section id="contact">
-        <h2>Contact</h2>
-        <ul class="contact">
-          <li>✉️ <a href="mailto:ton.email@exemple.com">ton.email@exemple.com</a></li>
-          <li>💼 <a href="https://www.linkedin.com/in/ton-profil">LinkedIn</a></li>
-          <li>🐙 <a href="https://github.com/pacome-luton">GitHub</a></li>
-        </ul>
-      </section>
-    </main>
+      <div class="paper">
+        <div class="title">Titre d'un preprint</div>
+        <div class="meta">Co-Auteur C, <span class="me">Pacôme Luton</span></div>
+        <div class="meta"><em>arXiv:2601.00000</em>, 2025</div>
+        <div class="refs">[<a href="#">arXiv</a>]</div>
+      </div>
+    </section>
 
-    <footer>© 2026 Pacôme Luton · Hébergé sur GitHub Pages</footer>
+    <!-- ========== Divers ========== -->
+    <section id="divers">
+      <h2>Divers</h2>
+      <p>En dehors de la recherche, j'aime :</p>
+      <ul>
+        <li><strong>Passion n°1</strong> : quelques mots.</li>
+        <li><strong>Passion n°2</strong> : quelques mots.</li>
+        <li><strong>Passion n°3</strong> : quelques mots.</li>
+      </ul>
+    </section>
+
+    <!-- ========== Historique ========== -->
+    <section id="historique">
+      <h2>Historique</h2>
+
+      <div class="entry">
+        <div class="date">2025 – auj.</div>
+        <div><strong>Doctorat en informatique</strong><div class="org">Laboratoire XYZ, Université de Ville</div></div>
+      </div>
+      <div class="entry">
+        <div class="date">2025</div>
+        <div><strong>Stage de recherche (6 mois)</strong><div class="org">Équipe ABC, Institut, Ville</div></div>
+      </div>
+      <div class="entry">
+        <div class="date">2023 – 2025</div>
+        <div><strong>Master en informatique</strong><div class="org">Université de Ville</div></div>
+      </div>
+      <div class="entry">
+        <div class="date">2024</div>
+        <div><strong>Stage (3 mois)</strong><div class="org">Laboratoire, Pays</div></div>
+      </div>
+      <div class="entry">
+        <div class="date">2020 – 2023</div>
+        <div><strong>Licence d'informatique</strong><div class="org">Université de Ville</div></div>
+      </div>
+    </section>
+
+    <footer>© 2026 Pacôme Luton · Dernière mise à jour : novembre 2026</footer>
   </div>
 </body>
 </html>
