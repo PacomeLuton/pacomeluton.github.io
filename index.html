@@ -93,9 +93,9 @@
       <img src="https://github.com/pacome-luton.png" alt="Photo de Pacôme Luton">
       <div>
         <h1>Pacôme Luton</h1>
-        <div class="role">Doctorant en informatique<br>Laboratoire XYZ, Université de Ville</div>
+        <div class="role">Doctorant en informatique graphique<br>Équipe <a href="https://team.inria.fr/maverick/">Maverick</a>, LJK, Grenoble</div>
         <div class="links">
-          <a href="mailto:prenom.nom@universite.fr">Email</a><a href="https://scholar.google.com/">Google Scholar</a><a href="https://dblp.org/">DBLP</a><a href="https://github.com/pacome-luton">GitHub</a><a href="cv.pdf">CV</a>
+          <a href="mailto:prenom.nom@inria.fr">Email</a><a href="https://scholar.google.com/">Google Scholar</a><a href="https://github.com/pacome-luton">GitHub</a><a href="cv.pdf">CV</a>
         </div>
       </div>
     </header>
@@ -104,49 +104,65 @@
     <section id="recherche">
       <h2>Intérêts de recherche</h2>
       <p>
-        Je suis doctorant au Laboratoire XYZ, sous la direction de <a href="#">Prénom Nom</a>.
-        Mes travaux portent sur <strong>[ton sujet principal]</strong>, et plus précisément sur
-        [la question que tu cherches à résoudre].
+        Je suis doctorant depuis septembre 2024 dans l'équipe <a href="https://team.inria.fr/maverick/">Maverick</a>
+        au Laboratoire Jean Kuntzmann (LJK) à Grenoble. Je travaille sur le
+        <strong>rendu en temps réel</strong>.
       </p>
-      <p>Mes principaux centres d'intérêt :</p>
-      <ul>
-        <li><strong>Thème n°1</strong> : une phrase de description.</li>
-        <li><strong>Thème n°2</strong> : une phrase de description.</li>
-        <li><strong>Thème n°3</strong> : une phrase de description.</li>
-      </ul>
+      <p>
+        Je m'intéresse en ce moment aux <strong>rayons courbes</strong> : plutôt que de
+        déformer la géométrie d'une scène, je cherche à <strong>déformer l'espace</strong>
+        dans lequel la lumière se propage, en courbant les rayons eux-mêmes, tout en restant
+        compatible avec les contraintes du temps réel.
+      </p>
     </section>
 
     <!-- ========== Papers ========== -->
     <section id="papers">
       <h2>Papers</h2>
 
+      <!-- Modèle à copier pour chaque papier -->
       <div class="paper">
-        <div class="title">Titre de ton papier le plus récent</div>
-        <div class="meta"><span class="me">Pacôme Luton</span>, Co-Auteur A, Directeur B</div>
-        <div class="meta"><em>CONF 2026</em>, International Conference on Something</div>
+        <div class="title">Titre du papier</div>
+        <div class="meta"><span class="me">Pacôme Luton</span>, Co-Auteur A, Co-Auteur B</div>
+        <div class="meta"><em>Conférence ou revue</em>, année</div>
         <div class="refs">
-          [<a href="#">pdf</a>] [<a href="#">code</a>]
-          <details><summary>[bibtex]</summary><pre>@inproceedings{luton2026titre,
-  title     = {Titre de ton papier le plus récent},
-  author    = {Luton, Pacôme and A, Co-Auteur and B, Directeur},
-  booktitle = {International Conference on Something (CONF)},
-  year      = {2026}
+          [<a href="#">pdf</a>] [<a href="#">projet</a>]
+          <details><summary>[bibtex]</summary><pre>@inproceedings{luton20xx,
+  title     = {Titre du papier},
+  author    = {Luton, Pacôme and A, Co-Auteur and B, Co-Auteur},
+  booktitle = {Conférence},
+  year      = {20xx}
 }</pre></details>
         </div>
       </div>
 
-      <div class="paper">
-        <div class="title">Titre d'un article de revue</div>
-        <div class="meta"><span class="me">Pacôme Luton</span>, Directeur B</div>
-        <div class="meta"><em>Journal of Something</em>, vol. 12, 2025</div>
-        <div class="refs">[<a href="#">pdf</a>]</div>
-      </div>
+      <p class="meta">La liste complète est sur <a href="https://scholar.google.com/">Google Scholar</a>.</p>
+    </section>
 
-      <div class="paper">
-        <div class="title">Titre d'un preprint</div>
-        <div class="meta">Co-Auteur C, <span class="me">Pacôme Luton</span></div>
-        <div class="meta"><em>arXiv:2601.00000</em>, 2025</div>
-        <div class="refs">[<a href="#">arXiv</a>]</div>
+    <!-- ========== Enseignement ========== -->
+    <section id="enseignement">
+      <h2>Enseignement</h2>
+      <div class="entry">
+        <div class="date">2025 – 2026</div>
+        <div><strong>Nom du cours</strong> (TD / TP, xx h)<div class="org">Niveau, Établissement</div></div>
+      </div>
+      <div class="entry">
+        <div class="date">2025 – 2026</div>
+        <div><strong>Nom du cours</strong> (TD / TP, xx h)<div class="org">Niveau, Établissement</div></div>
+      </div>
+    </section>
+
+    <!-- ========== Historique ========== -->
+    <section id="historique">
+      <h2>Historique</h2>
+      <div class="entry">
+        <div class="date">2024 – auj.</div>
+        <div><strong>Doctorat en informatique</strong><div class="org">Équipe Maverick, LJK, Grenoble</div></div>
+      </div>
+      <!-- Ajoute ici tes stages au même format -->
+      <div class="entry">
+        <div class="date">2020 – 2024</div>
+        <div><strong>Études à l'ENS de Lyon</strong><div class="org">École normale supérieure de Lyon</div></div>
       </div>
     </section>
 
@@ -159,32 +175,6 @@
         <li><strong>Passion n°2</strong> : quelques mots.</li>
         <li><strong>Passion n°3</strong> : quelques mots.</li>
       </ul>
-    </section>
-
-    <!-- ========== Historique ========== -->
-    <section id="historique">
-      <h2>Historique</h2>
-
-      <div class="entry">
-        <div class="date">2025 – auj.</div>
-        <div><strong>Doctorat en informatique</strong><div class="org">Laboratoire XYZ, Université de Ville</div></div>
-      </div>
-      <div class="entry">
-        <div class="date">2025</div>
-        <div><strong>Stage de recherche (6 mois)</strong><div class="org">Équipe ABC, Institut, Ville</div></div>
-      </div>
-      <div class="entry">
-        <div class="date">2023 – 2025</div>
-        <div><strong>Master en informatique</strong><div class="org">Université de Ville</div></div>
-      </div>
-      <div class="entry">
-        <div class="date">2024</div>
-        <div><strong>Stage (3 mois)</strong><div class="org">Laboratoire, Pays</div></div>
-      </div>
-      <div class="entry">
-        <div class="date">2020 – 2023</div>
-        <div><strong>Licence d'informatique</strong><div class="org">Université de Ville</div></div>
-      </div>
     </section>
 
     <footer>© 2026 Pacôme Luton · Dernière mise à jour : novembre 2026</footer>
