@@ -66,10 +66,26 @@
       font-size: 13px; line-height: 1.45; overflow-x: auto;
     }
 
+    .pub { display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: start; padding: 18px 0; border-top: 1px solid var(--rule); }
+    .pub:first-of-type { border-top: 0; padding-top: 0; }
+    .pub .teaser { display: block; border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; aspect-ratio: 16 / 10; background: var(--rule); }
+    .pub .teaser img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
+    .pub .venue { display: inline-block; font-size: .78rem; letter-spacing: .05em; text-transform: uppercase; color: var(--link); border: 1px solid currentColor; border-radius: 3px; padding: 1px 7px; margin-bottom: 6px; }
+    .pub .title { font-weight: bold; font-size: 1.08rem; line-height: 1.35; }
+    .pub .meta { color: var(--muted); font-size: .95rem; }
+    .pub .refs { margin-top: 6px; font-size: .9rem; }
+    .pub .refs a + a::before { content: " · "; color: var(--muted); }
+    .paper .me, .pub .me { text-decoration: underline; }
+
     /* Historique */
     .entry { display: grid; grid-template-columns: 130px 1fr; gap: 16px; margin-bottom: 14px; }
     .entry .date { color: var(--muted); }
     .entry .org { color: var(--muted); font-style: italic; }
+
+    .stages { list-style: none; padding: 0; margin-top: 10px; font-size: .95rem; }
+    .stages li { padding-left: 14px; border-left: 2px solid var(--rule); }
+    .stages li + li { margin-top: 10px; }
+    .stages .date { display: block; color: var(--muted); font-size: .85rem; }
 
     footer {
       margin-top: 56px; padding-top: 16px; border-top: 1px solid var(--rule);
@@ -82,6 +98,7 @@
       header { flex-direction: column; align-items: flex-start; gap: 16px; }
       header img { width: 110px; height: 110px; }
       .entry { grid-template-columns: 1fr; gap: 0; }
+      .pub { grid-template-columns: 1fr; gap: 12px; }
     }
   </style>
 </head>
@@ -95,7 +112,7 @@
         <h1>Pacôme Luton</h1>
         <div class="role">Doctorant en informatique graphique<br>Équipe <a href="https://team.inria.fr/maverick/">Maverick</a>, LJK, Grenoble</div>
         <div class="links">
-          <a href="mailto:prenom.nom@inria.fr">Email</a><a href="https://scholar.google.com/">Google Scholar</a><a href="https://github.com/pacome-luton">GitHub</a><a href="cv.pdf">CV</a>
+          <a href="mailto:pacome.luton@ens-lyon.fr">Email</a><a href="https://scholar.google.com/citations?user=IxrPG0kAAAAJ">Google Scholar</a><a href="https://github.com/pacome-luton">GitHub</a><a href="cv.pdf">CV</a>
         </div>
       </div>
     </header>
@@ -120,23 +137,23 @@
     <section id="papers">
       <h2>Papers</h2>
 
-      <!-- Modèle à copier pour chaque papier -->
-      <div class="paper">
-        <div class="title">Titre du papier</div>
-        <div class="meta"><span class="me">Pacôme Luton</span>, Co-Auteur A, Co-Auteur B</div>
-        <div class="meta"><em>Conférence ou revue</em>, année</div>
-        <div class="refs">
-          [<a href="#">pdf</a>] [<a href="#">projet</a>]
-          <details><summary>[bibtex]</summary><pre>@inproceedings{luton20xx,
-  title     = {Titre du papier},
-  author    = {Luton, Pacôme and A, Co-Auteur and B, Co-Auteur},
-  booktitle = {Conférence},
-  year      = {20xx}
-}</pre></details>
+      <!-- Pour chaque papier : remplace l'image par ton teaser (ex. teasers/hpg25.jpg dans le dépôt) -->
+      <article class="pub">
+        <a class="teaser" href="https://hal.science/hal-05095359v1"><img src="https://thumb.ccsd.cnrs.fr/9700054/thumb/medium" alt="Teaser : Real-time rendering of animated meshless representations"></a>
+        <div>
+          <div class="venue">HPG 2025 · Copenhague</div>
+          <div class="title">Real-time rendering of animated meshless representations</div>
+          <div class="meta"><span class="me">Pacôme Luton</span>, Thibault Tricard</div>
+          <div class="meta"><em>Conference on High Performance Graphics (HPG)</em>, 2025</div>
+          <div class="refs">
+            <a href="https://hal.science/hal-05095359/file/Real_time_rendering_of_animated_meshless_representation_HPG25-3.pdf">pdf</a>
+            <a href="https://hal.science/hal-05095359v1">HAL</a>
+            <a href="https://hal.science/hal-05095359v1/bibtex">bibtex</a>
+          </div>
         </div>
-      </div>
+      </article>
 
-      <p class="meta">La liste complète est sur <a href="https://scholar.google.com/">Google Scholar</a>.</p>
+      <p class="meta">Liste complète sur <a href="https://scholar.google.com/citations?user=IxrPG0kAAAAJ">Google Scholar</a>.</p>
     </section>
 
     <!-- ========== Enseignement ========== -->
@@ -157,12 +174,23 @@
       <h2>Historique</h2>
       <div class="entry">
         <div class="date">2024 – auj.</div>
-        <div><strong>Doctorat en informatique</strong><div class="org">Équipe Maverick, LJK, Grenoble</div></div>
+        <div><strong>Doctorat en informatique</strong><div class="org">Équipe Maverick, LJK, Université Grenoble Alpes</div></div>
       </div>
-      <!-- Ajoute ici tes stages au même format -->
       <div class="entry">
         <div class="date">2020 – 2024</div>
-        <div><strong>Études à l'ENS de Lyon</strong><div class="org">École normale supérieure de Lyon</div></div>
+        <div>
+          <strong>Master d'informatique, ENS de Lyon</strong>
+          <div class="org">École normale supérieure de Lyon</div>
+          <!-- Stages (masqués pour l'instant)
+          <ul class="stages">
+            <li><span class="date">2024 · 4 mois</span> <strong>Université de Sherbrooke</strong> (Canada) : génération procédurale de végétation à de multiples échelles.</li>
+            <li><span class="date">2023 – 2024 · 6 mois</span> <strong>Inria Montbonnot</strong>, équipe MicMap : approche variationnelle pour la génération automatique de cartes panoramiques.</li>
+            <li><span class="date">2023 · 6 mois</span> <strong>LIRIS</strong>, avec Nicolas Bonneel : prédiction de l'erreur Monte-Carlo pour l'échantillonnage adaptatif.</li>
+            <li><span class="date">2022 · 3 mois</span> <strong>Max-Planck-Institut für Informatik</strong> (Allemagne), avec Gurprit Singh : analyse spectrale d'échantillonneurs anisotropes.</li>
+            <li><span class="date">2021 · 6 semaines</span> <strong>CNRS, Université Savoie Mont Blanc</strong>, avec Tom Hirschowitz : réduction de monades et sûreté du typage.</li>
+          </ul>
+          -->
+        </div>
       </div>
     </section>
 
