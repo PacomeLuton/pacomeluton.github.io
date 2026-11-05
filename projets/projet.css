@@ -1,0 +1,235 @@
+/* Pages de projets : une colonne de largeur fixe (celle du texte d'un article LaTeX),
+   en Latin Modern comme le PDF. Sous cette largeur, la colonne suit l'écran et les
+   tableaux et schémas passent à la verticale. */
+
+/* Latin Modern (GUST Font License), mêmes corps optiques que LaTeX :
+   10 pour le texte, 8 pour les petits textes, 17 pour le titre. */
+@font-face { font-family: "LM Roman"; src: url(fonts/lm-roman10-regular.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "LM Roman"; src: url(fonts/lm-roman10-italic.woff2) format("woff2"); font-style: italic; font-display: swap; }
+@font-face { font-family: "LM Roman"; src: url(fonts/lm-roman10-bold.woff2) format("woff2"); font-weight: bold; font-display: swap; }
+@font-face { font-family: "LM Roman"; src: url(fonts/lm-roman10-bolditalic.woff2) format("woff2"); font-weight: bold; font-style: italic; font-display: swap; }
+@font-face { font-family: "LM Roman 8"; src: url(fonts/lm-roman8-regular.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "LM Roman 8"; src: url(fonts/lm-roman8-italic.woff2) format("woff2"); font-style: italic; font-display: swap; }
+@font-face { font-family: "LM Roman 8"; src: url(fonts/lm-roman8-bold.woff2) format("woff2"); font-weight: bold; font-display: swap; }
+@font-face { font-family: "LM Roman 17"; src: url(fonts/lm-roman17-regular.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "LM Caps"; src: url(fonts/lm-romancaps10-regular.woff2) format("woff2"); font-display: swap; }
+@font-face { font-family: "LM Mono"; src: url(fonts/lm-mono10-regular.woff2) format("woff2"); font-display: swap; }
+
+:root {
+  color-scheme: light;
+  --col: 680px;
+  --marge: 20px;
+  --link: #000080;   /* le bleu des liens hyperref du PDF */
+  --muted: #666;
+  --trait: #666;
+  --serif: "LM Roman", "Latin Modern Roman", "CMU Serif", "Times New Roman", serif;
+  --petit: "LM Roman 8", var(--serif);
+  --caps: "LM Caps", var(--serif);
+  --mono: "LM Mono", ui-monospace, Menlo, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { background: #fff; color: #000; font: .97rem/1.36 var(--serif); font-kerning: normal; }
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code { font-family: var(--mono); font-size: .98em; }
+.sheet .katex { font-size: 1em; }
+.nb { white-space: nowrap; }
+
+/* Colonne : largeur fixe dès que l'écran le permet */
+.bar, .sheet { width: min(var(--col), 100% - 2 * var(--marge)); margin-inline: auto; }
+.bar { display: flex; justify-content: space-between; gap: 1em; padding: 14px 0 0; font-family: var(--petit); font-size: .84rem; }
+.sheet { padding: 36px 0 72px; }
+
+/* Titre */
+.titre { text-align: center; }
+h1 { font-family: "LM Roman 17", var(--serif); font-size: 1.8rem; font-weight: normal; line-height: 1.2; }
+.titre .lead { font-size: 1.14rem; line-height: 1.3; }
+.titre .auteur { margin-top: 14px; font-size: 1.1rem; }
+.titre .shader { font-size: .84rem; overflow-wrap: anywhere; }
+.titre .shader a { font-family: var(--mono); }
+.titre p { text-align: center; hyphens: manual; }
+.hero { display: block; margin-top: 22px; }
+.hero img { display: block; width: 100%; height: auto; aspect-ratio: 2.35; object-fit: cover; }
+
+/* Texte */
+p { text-align: justify; hyphens: auto; }
+p + p { margin-top: .4em; }
+h2, h3 { display: flex; gap: 1em; line-height: 1.25; }
+h2 { margin: 1.5em 0 .5em; font-size: 1.3rem; }
+h3 { margin: 1.15em 0 .35em; font-size: 1.08rem; }
+.callout { margin-top: .8em; font-weight: bold; }
+[id] { scroll-margin-top: 14px; }
+li:target, .eq:target, figure:target { background: #fff6c8; }
+
+/* Sommaire, dans la marge : n'existe que s'il y a la place à côté de la colonne */
+.toc { display: none; }
+@media (min-width: 1160px) {
+  .toc {
+    display: block; position: fixed; top: 92px; left: calc(50% - var(--col) / 2 - 196px); width: 164px;
+    font-family: var(--petit); font-size: .78rem; line-height: 1.3;
+  }
+  .toc ol { list-style: none; }
+  .toc li { margin-bottom: 5px; }
+  .toc ol ol { margin: 5px 0 8px 1.3em; }
+  .toc a { color: var(--muted); }
+  .toc a:hover { color: #000; }
+}
+
+/* Équations numérotées */
+.eq { display: flex; align-items: center; gap: 12px; margin: 10px 0; }
+.eq .math { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0 36px; overflow-x: auto; overflow-y: hidden; }
+.eq .math .katex-display { margin: 2px 0; }
+.eq .math > span { text-align: center; }
+.eq .n { flex-shrink: 0; }
+
+/* Figures et tableaux */
+figure { margin: 18px 0; }
+figcaption { font-family: var(--petit); font-size: .84rem; text-align: center; }
+figcaption em { font-style: italic; }
+figcaption .tag { font-family: var(--caps); font-size: 1.1em; }
+figcaption.dessous { margin-top: 10px; }
+.deux { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 18px; align-items: start; margin: 18px 0; }
+.deux figure { margin: 0; min-width: 0; overflow-x: auto; }
+
+table { width: 100%; margin-top: 5px; border-collapse: collapse; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; font-family: var(--petit); font-size: .72rem; line-height: 1.3; }
+th { font-weight: normal; text-align: left; border-bottom: .75px solid #000; }
+th, td { padding: 2px 5px; vertical-align: top; white-space: nowrap; }
+th { padding-block: 3px; }
+th:first-child, td:first-child { padding-left: 0; }
+th:last-child, td:last-child { padding-right: 0; white-space: normal; }
+tr:last-child td { padding-bottom: 4px; }
+.c { text-align: center; }
+@media (min-width: 720px) { #tab2 td:last-child { white-space: nowrap; } }
+/* Tableau 1 : deux tableaux entre les mêmes filets, empilés sur petit écran */
+.paire { display: grid; grid-template-columns: auto 1fr; align-items: start; column-gap: 12px; margin-top: 5px; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; }
+.paire table { margin: 0; border: 0; font-size: .7rem; }
+.paire th, .paire td { padding-inline: 4px; }
+.paire th:first-child, .paire td:first-child { padding-left: 0; }
+.paire th:last-child, .paire td:last-child { padding-right: 0; }
+
+/* Boîtes colorées par repère, comme dans le PDF */
+.boite {
+  --bord: #8b8b8b; --fond: #f1f1f1; --encre: #666;
+  padding: 5px 9px 6px; border: 1.5px solid var(--bord); border-radius: 4px; background: var(--fond);
+  font-family: var(--petit); font-size: .8rem; line-height: 1.3; text-align: center;
+}
+.boite.observateur { --bord: #9373bb; --fond: #f2eef7; --encre: #664491; }
+.boite.monde { --bord: #4b7bbb; --fond: #e9eef7; --encre: #1a4c91; }
+.boite.local { --bord: #439b83; --fond: #e8f3f0; --encre: #116f55; }
+.boite.propre { --bord: #d37b53; --fond: #faefea; --encre: #aa4c22; }
+.boite .rep { display: block; color: var(--encre); font-family: var(--caps); font-size: .92em; line-height: 1.2; }
+.boite strong { font-size: 1.1em; }
+.boite code { font-size: 1em; }
+
+/* Flèche : un trait vertical sur l'axe --axe, avec le commentaire à sa droite */
+.via { position: relative; min-height: 30px; padding: 4px 0 6px calc(var(--axe) + 12px); list-style: none; font-family: var(--petit); font-size: .8rem; line-height: 1.25; }
+.via::before { content: ""; position: absolute; top: 0; bottom: 5px; left: calc(var(--axe) - .6px); border-left: 1.25px solid var(--trait); }
+.via::after { content: ""; position: absolute; bottom: 0; left: calc(var(--axe) - 4px); border: solid transparent; border-width: 6px 4px 0; border-top-color: var(--trait); }
+.via.monte::after { top: 0; bottom: auto; border-width: 0 4px 6px; border-top-color: transparent; border-bottom-color: var(--trait); }
+.via.monte::before { top: 5px; bottom: 0; }
+.via code { display: block; font-size: .93em; }
+.via.gris, .via.gris code { color: var(--muted); }
+
+/* Schéma des repères */
+.niveaux { display: grid; grid-template-columns: 1fr 126px 1fr 126px 1fr; align-items: center; }
+.niveaux .boite { font-size: .76rem; }
+.lien { text-align: center; color: var(--muted); font-family: var(--petit); font-size: .8rem; line-height: 1.2; }
+.lien > strong, .lien > span { display: block; }
+.lien .fleche { height: 9px; margin: 3px 0; background:
+  linear-gradient(var(--trait), var(--trait)) center / 100% 1.25px no-repeat,
+  conic-gradient(from 60deg at 0 50%, var(--trait) 60deg, transparent 0) left / 8px 100% no-repeat,
+  conic-gradient(from 240deg at 100% 50%, var(--trait) 60deg, transparent 0) right / 8px 100% no-repeat; }
+.lien code { display: block; font-size: .78em; line-height: 1.25; }
+
+/* Schéma de l'algorithme */
+.algo { --large: 272px; --axe: calc(var(--large) / 2); list-style: none; }
+.algo .boite { width: var(--large); }
+.boucle { display: grid; grid-template-columns: var(--large) 1fr 262px; grid-template-rows: 1fr 1fr; grid-template-areas: "marche aller branche" "marche retour branche"; }
+.boucle .marche { grid-area: marche; width: auto; align-content: center; }
+.boucle .tour { display: block; margin-top: 3px; color: var(--muted); }
+.boucle .tour svg { width: 1.05em; height: 1.05em; vertical-align: -.2em; margin-right: 3px; fill: none; stroke: currentColor; stroke-width: 1.4; }
+.boucle .branche { grid-area: branche; --axe: 50%; list-style: none; }
+.boucle .branche .boite { width: auto; }
+.boucle .branche .via { font-size: .74rem; }
+.boucle .branche .via code { display: inline; }
+.renvoi { position: relative; padding: 0 4px; color: var(--muted); font-family: var(--petit); font-size: .76rem; line-height: 1.2; text-align: center; }
+.renvoi.aller { grid-area: aller; align-self: end; padding-bottom: 9px; margin-bottom: 20px; }
+.renvoi.retour { grid-area: retour; align-self: start; padding-top: 9px; margin-top: 20px; }
+/* Sur grand écran, ces deux renvois sont des flèches horizontales */
+.renvoi::before { content: ""; position: absolute; left: 5px; right: 5px; border-top: 1.25px solid var(--trait); }
+.renvoi::after { content: ""; position: absolute; border: solid transparent; }
+.renvoi.aller::before { bottom: 2px; }
+.renvoi.aller::after { bottom: -1px; right: 0; border-width: 4px 0 4px 6px; border-left-color: var(--trait); }
+.renvoi.retour::before { top: 2px; }
+.renvoi.retour::after { top: -1px; left: 0; border-width: 4px 6px 4px 0; border-right-color: var(--trait); }
+
+/* Vignettes */
+.gallery { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px 8px; font-family: var(--petit); font-size: .74rem; line-height: 1.25; }
+.gallery img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; margin-bottom: 4px; }
+.gallery code { font-size: .92em; overflow-wrap: anywhere; }
+
+/* Références */
+.refs { list-style: none; counter-reset: ref; columns: 3 170px; column-gap: 20px; font-size: .84rem; line-height: 1.3; }
+.refs li { position: relative; padding-left: 2.3em; counter-increment: ref; break-inside: avoid; margin-bottom: 2px; }
+.refs li::before { content: "[" counter(ref) "]"; position: absolute; left: 0; width: 1.8em; text-align: right; }
+
+/* Moins de 720 px : la colonne ne tient plus, tout passe à la verticale */
+@media (max-width: 719.98px) {
+  .deux { grid-template-columns: minmax(0, 1fr); row-gap: 20px; }
+  .paire { grid-template-columns: minmax(0, 1fr); }
+  .paire table + table { border-top: .75px solid #000; }
+
+  .niveaux { grid-template-columns: minmax(0, 1fr); }
+  .lien { position: relative; min-height: 48px; padding: 7px 0 7px 36px; text-align: left; }
+  .lien > strong, .lien > span { display: inline; }
+  .lien .fleche { position: absolute; top: 3px; bottom: 3px; left: 14px; width: 9px; height: auto; margin: 0; background:
+    linear-gradient(var(--trait), var(--trait)) center / 1.25px 100% no-repeat,
+    conic-gradient(from 150deg at 50% 0, var(--trait) 60deg, transparent 0) top / 100% 8px no-repeat,
+    conic-gradient(from 330deg at 50% 100%, var(--trait) 60deg, transparent 0) bottom / 100% 8px no-repeat; }
+  .lien code { font-size: .86em; }
+
+  .algo { --large: 100%; --axe: 18px; }
+  .boucle { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; grid-template-areas: "marche" "aller" "branche" "retour"; }
+  .boucle .branche { --axe: 18px; margin-left: 18px; }
+  .renvoi { margin: 0 0 0 18px; font-size: .8rem; text-align: left; }
+  /* L'aller reste une flèche, verticale, qui entre dans la branche */
+  .renvoi.aller { align-self: auto; min-height: 30px; margin: 0 0 0 18px; padding: 7px 0 7px calc(var(--axe) + 12px); }
+  .renvoi.aller::before { inset: 0 auto 5px calc(var(--axe) - .6px); border-top: 0; border-left: 1.25px solid var(--trait); }
+  .renvoi.aller::after { inset: auto auto 0 calc(var(--axe) - 4px); border-width: 6px 4px 0; border-color: var(--trait) transparent transparent; }
+  /* Le retour se lit mieux en toutes lettres qu'avec une flèche sur le flux principal */
+  .renvoi.retour { align-self: auto; margin: 0 0 0 18px; padding: 6px 0 2px; color: var(--muted); }
+  .renvoi.retour::before { content: "retour à l’étape 5\00a0: "; position: static; border: 0; }
+  .renvoi.retour::after { content: none; }
+
+  .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); font-size: .8rem; }
+}
+
+/* Téléphone : texte un peu plus grand, au fer à gauche (pas de lézardes) */
+@media (max-width: 559.98px) {
+  body { font-size: 1.0625rem; line-height: 1.42; }
+  p { text-align: left; }
+  .titre { text-wrap: balance; }
+  h1 { font-size: 1.7rem; }
+  .hero img { aspect-ratio: 16 / 9; }
+  .eq { align-items: flex-start; }
+  .eq .n { margin-top: .7em; }
+  table, .paire table, .boite, .niveaux .boite, .via { font-size: .84rem; }
+}
+
+/* Très petits téléphones : les noms de macros doivent tenir dans la largeur */
+@media (max-width: 359.98px) {
+  table code { font-size: .86em; }
+  th, td { padding-inline: 3px; }
+}
+
+@media print {
+  @page { size: A4; margin: 18mm 20mm; }
+  body { font-size: 10pt; line-height: 1.25; }
+  .bar, .toc { display: none; }
+  .sheet { width: auto; padding: 0; }
+  a { color: #000080; }
+  figure, .boucle, .eq, .boite { break-inside: avoid; }
+  h2, h3 { break-after: avoid; }
+}

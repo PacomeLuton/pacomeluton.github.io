@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Space and Time · Pacôme Luton</title>
+  <meta name="description" content="Rendu temps réel d'un trou noir de Schwarzschild et de planètes en orbite, pour mettre en évidence les effets relativistes.">
+  <link rel="stylesheet" href="../projet.css">
+  <!-- Équations : KaTeX lit les \( ... \) et \[ ... \] directement dans le HTML. -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.css" integrity="sha384-WwGtaC6ywCHxA5cstpj/3+xIZvTez8dq2IcBQaXRkenHZ7FVVq1ZROtURwfbtTlG" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.js" integrity="sha384-a1WQdjRj162i159OYq041X6I4K8NenkrI09LlPmiHg0YOb7CR+wJOraXwK9abpnE" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous" onload="renderMathInElement(document.body)"></script>
+</head>
+<body>
+  <nav class="bar">
+    <a href="../../index.html#projets">← Pacôme Luton</a>
+  </nav>
+
+  <nav class="toc" aria-label="Sommaire">
+    <ol>
+      <li><a href="#scene">1 Scène et utilisation</a></li>
+      <li><a href="#reperes">2 Trois niveaux de repères</a></li>
+      <li><a href="#algorithme">3 Algorithme</a>
+        <ol>
+          <li><a href="#horloge">Horloge et caméra</a></li>
+          <li><a href="#marching">Marching</a></li>
+          <li><a href="#orbite">Planètes&nbsp;: orbite</a></li>
+          <li><a href="#doppler">Doppler</a></li>
+          <li><a href="#temps-propre">Temps propre</a></li>
+          <li><a href="#shading">Shading</a></li>
+        </ol>
+      </li>
+      <li><a href="#effets">4 Effets observables</a></li>
+      <li><a href="#discussion">5 Discussion</a></li>
+      <li><a href="#references">Références</a></li>
+    </ol>
+  </nav>
+
+  <article class="sheet">
+
+    <header class="titre">
+      <h1>Space and Time</h1>
+      <p class="lead">Mise en évidence des effets relativistes autour d’un trou noir de Schwarzschild</p>
+      <p class="auteur">Pacôme LUTON, (LJK, UGA, INRIA)</p>
+      <p class="shader">Shader&nbsp;: <a href="https://www.shadertoy.com/view/73tXRM">https://www.shadertoy.com/view/73tXRM</a></p>
+    </header>
+
+    <a class="hero" href="https://www.shadertoy.com/view/73tXRM"><img src="space-and-time.jpg" alt="Trou noir entouré d'un arc de lumière orange et bleu, avec une planète bleutée à droite" width="1520" height="952"></a>
+
+    <main>
+
+      <!-- ========== 1. Scène ========== -->
+      <section id="scene">
+        <h2><span class="num">1</span>Scène et utilisation</h2>
+        <p>
+          Le shader rend en temps réel un trou noir de Schwarzschild <a href="#ref1">[1]</a>, quatre planètes en orbite circulaire et un fond d’étoiles à l’infini, vus par plusieurs observateurs. Son but est de montrer et de mettre en valeur le plus grand nombre possible d’effets relativistes, de relativité restreinte comme de relativité générale. Chaque pixel lance un rayon <em>à rebours</em> dans l’espace-temps courbe&#8239;; le rayon porte une position <em>et</em> un temps. On obtient ainsi la courbure de la lumière, son temps de trajet (effet Shapiro <a href="#ref2">[2]</a> compris), les effets Doppler <a href="#ref3">[3]</a>, la contraction des longueurs <a href="#ref4">[4]</a>, l’aberration et le temps propre de chaque objet (transformation de Lorentz <a href="#ref5">[5]</a>). Chaque effet a un interrupteur dans l’onglet <em>Common</em> (<a href="#tab2">tableau 2</a>), ce qui permet de les isoler (<a href="#effets">section 4</a>)&#8239;; les principales constantes de la scène sont réglables (<a href="#tab3">tableau 3</a>).
+        </p>
+        <p>
+          <strong>Organisation.</strong> <em>Common</em> contient la physique (repères, Doppler, orbites, temps propre) et le shading&#8239;; <em>Image</em> contient la marche du rayon&#8239;; <em>Buffer A</em> mémorise d’une image à l’autre l’orientation de la caméra (souris), l’observateur choisi et la hauteur de l’observateur statique (commandes&nbsp;: <a href="#tab1">tableau 1</a>).
+        </p>
+
+        <figure id="tab1">
+          <figcaption><span class="tag">Tableau 1</span> – Commandes (<em>Buffer A</em>)&nbsp;: les touches <code>1</code> à <code>7</code> choisissent l’observateur.</figcaption>
+          <div class="paire">
+            <table>
+              <thead><tr><th>Touche</th><th>Observateur (point de vue)</th></tr></thead>
+              <tbody>
+                <tr><td><code>1</code></td><td>lointain (<code>WORLD</code>, \(r = 18\)), par défaut</td></tr>
+                <tr><td><code>2</code></td><td>centre du trou noir (image noire)</td></tr>
+                <tr><td><code>3</code>–<code>6</code></td><td>sur la planète A à D (de la plus proche à la plus loin)</td></tr>
+                <tr><td><code>7</code></td><td>statique (<code>STATIC</code>), orientation réinitialisée</td></tr>
+              </tbody>
+            </table>
+            <table>
+              <thead><tr><th>Commande</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td>↑↓</td><td>hauteur \(r = h\,r_s\) de <code>STATIC</code>, \(1 &lt; h \le 30\) (défaut 1,2)</td></tr>
+                <tr><td>souris</td><td><code>WORLD</code>&nbsp;: orbite autour du trou noir</td></tr>
+                <tr><td></td><td>autres&nbsp;: tourne la tête dans le repère propre</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </figure>
+
+        <div class="deux">
+          <figure id="tab2">
+            <figcaption><span class="tag">Tableau 2</span> – Interrupteurs physiques (<em>Common</em>).</figcaption>
+            <table>
+              <thead><tr><th>Macro</th><th class="c">Défaut</th><th>Effet</th></tr></thead>
+              <tbody>
+                <tr><td><code>SPACE_IS_CURVE</code></td><td class="c">1</td><td>courbure de l’espace-temps (\(f\))</td></tr>
+                <tr><td><code>LIGHT_AS_A_SPEED</code></td><td class="c">1</td><td>temps de trajet de la lumière</td></tr>
+                <tr><td><code>DOPPLER_CLASSIQUE</code></td><td class="c">1</td><td>facteur \(1 + \vec\beta\cdot\hat d\)</td></tr>
+                <tr><td><code>DOPPLER_RESTREINT</code></td><td class="c">1</td><td>facteur \(\gamma\)</td></tr>
+                <tr><td><code>DOPPLER_GRAVITATIONNEL</code></td><td class="c">1</td><td>facteur \(1/\sqrt f\)</td></tr>
+                <tr><td><code>CONTRACTION_LONGUEURS</code></td><td class="c">1</td><td>Lorentz local \(\leftrightarrow\) propre</td></tr>
+                <tr><td><code>TEMPS_PROPRE</code></td><td class="c">1</td><td>horloge de l’observateur</td></tr>
+                <tr><td><code>PULSE</code></td><td class="c">1</td><td>pulsation au temps propre</td></tr>
+              </tbody>
+            </table>
+          </figure>
+          <figure id="tab3">
+            <figcaption><span class="tag">Tableau 3</span> – Constantes modifiables.</figcaption>
+            <table>
+              <thead><tr><th>Constante</th><th class="c">Valeur</th><th>Rôle</th></tr></thead>
+              <tbody>
+                <tr><td><code>C</code></td><td class="c">1</td><td>vitesse de la lumière</td></tr>
+                <tr><td><code>RS</code></td><td class="c">1,4</td><td>rayon de Schwarzschild</td></tr>
+                <tr><td><code>TIME_SPEED</code></td><td class="c">10</td><td>accélère la simulation</td></tr>
+                <tr><td><code>ACCELERATE_PLANETE</code></td><td class="c">4</td><td>facteur sur la vitesse des planètes</td></tr>
+                <tr><td><code>PLANETES</code></td><td class="c"></td><td>rayon \(a\), orbite \(R\), phase \(\phi_0\)</td></tr>
+              </tbody>
+            </table>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ========== 2. Repères ========== -->
+      <section id="reperes">
+        <h2><span class="num">2</span>Trois niveaux de repères</h2>
+        <p>Les formules de relativité restreinte ne valent que dans un repère où la métrique est celle de Minkowski au point considéré&#8239;; le shader travaille donc sur trois niveaux, et chaque passage ne fait intervenir qu’un seul effet.</p>
+
+        <figure class="niveaux">
+          <div class="boite monde"><span class="rep">niveau 1</span><strong>Monde</strong><br>coordonnées de Schwarzschild \((t, \vec x)\)<br>rayon, positions, vitesses \(d\vec x/dt\), marche</div>
+          <div class="lien"><strong>gravitation</strong> <span>seulement \(f\)</span><div class="fleche"></div><code>mondeVersLocal</code><code>betaLocale</code><code>directionMondeVersLocale</code></div>
+          <div class="boite local"><span class="rep">niveau 2</span><strong>Local statique</strong><br>observateur immobile en \(\vec x\)<br>relativité restreinte&nbsp;: \(\vec\beta\), \(\gamma\), Doppler&#8239;; un objet mobile y paraît contracté</div>
+          <div class="lien"><strong>vitesse</strong> <span>seulement \(\vec\beta\)</span><div class="fleche"></div><code>ecartLocalVersPropre</code><code>directionPropreVersLocal</code><code>energiePhoton</code></div>
+          <div class="boite propre"><span class="rep">niveau 3</span><strong>Propre</strong><br>objet ou observateur au repos<br>forme vraie (sphère), texture, spectre émis, temps propre</div>
+        </figure>
+
+        <p><strong>Monde \(\leftrightarrow\) local statique.</strong> L’observateur statique a les mêmes axes que le monde&#8239;; il mesure \(d\tau = \sqrt f\,dt\) et des longueurs radiales \(dr/\sqrt f\). Avec \(\vec k = d\vec x/d\lambda\) la vitesse du rayon (<code>ray.dir</code>) <a href="#ref6">[6]</a>&nbsp;:</p>
+        <div class="eq" id="eq1">
+          <div class="math">\[\Delta\vec x_{\text{loc}} = \frac{\Delta x_r}{\sqrt f}\,\vec n + \Delta\vec x_\perp,\]\[\vec\beta = \frac1c\left(\frac{v_r}{f}\,\vec n + \frac{\vec v_\perp}{\sqrt f}\right)\]</div>
+          <span class="n">(1)</span>
+        </div>
+
+        <p><strong>Local statique \(\leftrightarrow\) propre.</strong> C’est la relativité restreinte, avec la vitesse locale \(\vec\beta\) de l’objet et \(\gamma = (1-\beta^2)^{-1/2}\). Transformations de Lorentz <a href="#ref5">[5]</a>&nbsp;:</p>
+        <div class="eq" id="eq2">
+          <div class="math">\[c\,t' = \gamma\left(c\,t - \vec\beta\cdot\vec x\right),\]\[\vec x\,' = \vec x + (\gamma-1)(\vec x\cdot\hat\beta)\,\hat\beta - \gamma\,\vec\beta\,c\,t.\]</div>
+          <span class="n">(2)</span>
+        </div>
+        <p>Le code en déduit la contraction des planètes <a href="#ref4">[4]</a>, l’aberration des directions et le facteur Doppler.</p>
+      </section>
+
+      <!-- ========== 3. Algorithme ========== -->
+      <section id="algorithme">
+        <h2><span class="num">3</span>Algorithme</h2>
+
+        <figure>
+          <ol class="algo">
+            <li class="boite"><span class="rep">repère caméra</span><strong>1. Pixel</strong> (<code>generateRay</code>)<br>direction du pixel, FOV \(75^\circ\)</li>
+            <li class="via"><strong>rotation</strong> <code>baseDepuisForward</code></li>
+            <li class="boite observateur"><span class="rep">propre de l’observateur</span><strong>2. Orientation</strong> (<code>local2World</code>)<br>\(\hat d'\) dans les axes monde</li>
+            <li class="via"><strong>aberration</strong> <a href="#eq2">(2)</a>, <code>directionPropreVersLocal</code></li>
+            <li class="boite local"><span class="rep">local statique en \(\vec x_o\)</span><strong>3. Aberration</strong><br>\(\hat d\) vue par l’observateur statique</li>
+            <li class="via"><strong>gravitation</strong> <a href="#eq1">(1)</a>, <code>directionLocalVersMonde</code></li>
+            <li class="boite monde"><span class="rep">monde</span><strong>4. Rayon monde</strong><br>\(\vec x_o,\ \vec k,\ t_o = \tau_o/(d\tau/dt)_o\)</li>
+            <li class="via"></li>
+            <li class="boucle">
+              <div class="boite monde marche"><span class="rep">monde</span><strong>5. Marche</strong> (<code>traceRay</code>)<br>géodésique nulle et temps \(t(\lambda)\)<br>arrêt&nbsp;: horizon, fond étoilé ou planète<span class="tour"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.5-3.5M13 1.5v3.2H9.8"/></svg>boucle, pas \(d\lambda\)</span></div>
+              <div class="renvoi aller">chaque planète, à chaque pas</div>
+              <ol class="branche">
+                <li class="boite monde"><span class="rep">monde</span>\(\Delta\vec x = \vec x - \vec x_c(t),\ \vec v(t)\)</li>
+                <li class="via gris"><code>mondeVersLocal</code></li>
+                <li class="boite local"><span class="rep">local statique en \(\vec x_c\)</span>\(\Delta\vec x_{\text{loc}},\ \vec\beta\)</li>
+                <li class="via gris"><code>ecartLocalVersPropre</code></li>
+                <li class="boite propre"><span class="rep">propre de la planète</span>sphère&nbsp;: \(d' = \lVert\Delta\vec x\,'\rVert - a\)</li>
+              </ol>
+              <div class="renvoi retour">\(d = d'\sqrt f/\gamma\)</div>
+            </li>
+            <li class="via"><strong>gravitation</strong> <a href="#eq1">(1)</a>, en \(\vec x_o\) et à l’impact</li>
+            <li class="boite local"><span class="rep">local statique, aux deux bouts</span><strong>6. Doppler</strong> (<code>energiePhoton</code>)<br>\(\mathcal D = E_o/E_e\)</li>
+            <li class="via"><strong>énergie</strong> <a href="#eq2">(2)</a>, \(\times\,\gamma(1 + \vec\beta_e\cdot\hat d)\)</li>
+            <li class="boite propre"><span class="rep">propre de la source</span><strong>7. Shading</strong><br>étoiles&nbsp;: corps noir à \(\mathcal D T\)<br>planètes&nbsp;: texture, \(\tau\), pulsation</li>
+          </ol>
+        </figure>
+        <p>Chaque boîte a la couleur du repère où vit la grandeur calculée&#8239;; chaque flèche annotée est un changement de repère.</p>
+
+        <h3 id="horloge"><span class="num">3.1</span>Horloge et caméra (étapes 1 à 4)</h3>
+        <p>Le temps s’écoule au rythme du temps propre \(\tau_o\) de l’observateur courant. Le facteur</p>
+        <div class="eq" id="eq3">
+          <div class="math">\[\frac{d\tau}{dt} = \frac{\sqrt f}{\gamma}\]<span>(dilatation gravitationnelle et cinématique <a href="#ref7">[7]</a>)</span></div>
+          <span class="n">(3)</span>
+        </div>
+        <p>permet d’en déduire le temps \(t_o = \tau_o/(d\tau/dt)_o\) d’un observateur fictif lointain&nbsp;: c’est ce temps monde qui sert à calculer la position des objets. La direction du pixel est tournée vers les axes monde (orientée par défaut vers le trou noir), corrigée de l’aberration si l’observateur bouge, puis convertie en \(\vec k\) par <a href="#eq1">(1)</a>.</p>
+
+        <h3 id="marching"><span class="num">3.2</span>Marching (étape 5)</h3>
+        <p><strong>Rayons courbes.</strong> Comme dans le raytracer <em>Starless</em> <a href="#ref8">[8]</a>, la géodésique nulle est remplacée par un mouvement newtonien sous une force fictive, avec \(\vec L = \vec x\times\vec k\) conservé&nbsp;:</p>
+        <div class="eq" id="eq4">
+          <div class="math">\[\frac{d^2\vec x}{d\lambda^2} = -\frac32\,r_s\,L^2\,\frac{\vec x}{r^5},\]\[\frac{d(ct)}{d\lambda} = -\frac1f.\]</div>
+          <span class="n">(4)</span>
+        </div>
+        <p>La trajectoire vérifie exactement l’équation de Binet <a href="#ref9">[9]</a> des photons, \(u'' + u = \tfrac32 r_s u^2\) \((u = 1/r)\). Elle est intégrée par Euler semi-implicite <a href="#ref10">[10]</a> (vitesse, puis position avec la nouvelle vitesse), et le temps du rayon recule à chaque pas, ce qui donne le temps de trajet et l’effet Shapiro.</p>
+        <p><strong>Sphere tracing.</strong> À chaque pas, chaque planète est placée au temps du rayon et le point est passé dans son repère propre, où elle est une sphère immobile (branche de l’étape 5)&#8239;; la distance propre \(d'\) est ramenée au repère monde par \(d = d'\sqrt f/\gamma\), et le pas vaut \(\min(d/2,\ 0{,}05\,r)\). Le facteur \(1/2\) vient de ce que les planètes bougent&nbsp;: pendant que le rayon parcourt \(\ell\), une planète ne peut pas s’en rapprocher de plus de \(\ell\), puisqu’elle va moins vite que la lumière. L’écart se réduit donc d’au plus \(2\ell\), et un pas de \(d/2\) ne la traverse jamais. La borne \(0{,}05\,r\) raccourcit les pas près du trou noir, où la courbure <span class="nb">(en \(1/r^5\))</span> varie vite et où de grands pas d’Euler fausseraient la trajectoire.</p>
+
+        <h3 id="orbite"><span class="num">3.3</span>Planètes&nbsp;: orbite</h3>
+        <p>Les planètes suivent des orbites circulaires autour du trou noir. Le shader peut les accélérer pour rendre le mouvement visible, mais il borne leur vitesse locale pour qu’elle reste toujours inférieure à \(c\).</p>
+
+        <h3 id="doppler"><span class="num">3.4</span>Doppler (étape 6)</h3>
+        <p>L’énergie d’un photon reçue par un objet se calcule dans le repère local statique de son point, avec <a href="#eq1">(1)</a> puis <a href="#eq2">(2)</a>&nbsp;:</p>
+        <div class="eq" id="eq5">
+          <div class="math">\[E = \left(1 + \vec\beta\cdot\hat d\right)\,\gamma\,\frac{1}{\sqrt f},\]\[\mathcal D = \frac{E_o}{E_e},\]</div>
+          <span class="n">(5)</span>
+        </div>
+        <p>les trois facteurs (classique, restreint <a href="#ref3">[3]</a>, gravitationnel <a href="#ref11">[11]</a>) étant activés séparément par les trois macros <code>DOPPLER_*</code>. \(E_o\) est évaluée à la caméra, \(E_e\) au point d’impact avec la vitesse de la planète au temps d’émission&#8239;; pour les étoiles, immobiles à l’infini, \(E_e = 1\).</p>
+
+        <h3 id="temps-propre"><span class="num">3.5</span>Temps propre et pulsation</h3>
+        <p>Le temps propre <a href="#ref12">[12]</a> d’une planète au point touché est \(\tau = (d\tau/dt)\,t_e\), avec \(t_e\) le temps d’émission porté par le rayon. Pour rendre visible le temps propre de chaque objet, nous avons ajouté une pulsation&nbsp;: \(\tau\) anime la texture et une pulsation \(p(\tau) = e^{-8\,\operatorname{frac}(\tau/T)}\) ajoutée à la couleur&#8239;; un disque en bas à gauche bat avec la même période au temps propre de l’observateur. La lumière transmettant les battements comme n’importe quelle fréquence, une planète bat, vue par l’observateur, \(\mathcal D\) fois plus vite que ce métronome (tous effets activés)&nbsp;: les planètes bleuies battent plus vite, les rougies plus lentement.</p>
+
+        <h3 id="shading"><span class="num">3.6</span>Shading (étape 7)</h3>
+        <p><strong>Étoiles.</strong> Technique proche de <a href="#ref13">[13]</a>. Le ciel est découpé en cases, et une étoile est placée aléatoirement dans chaque case. Température tirée entre 3000 et 10 000 K, couleur par la loi de Planck <a href="#ref14">[14]</a> échantillonnée à (610, 550, 465) nm. Le Doppler change seulement la température, car \(\mathcal D^3 L_\nu(\nu/\mathcal D, T) = L_\nu(\nu, \mathcal D T)\). Le gain lumineux réel couvrant plusieurs ordres de grandeur, la teinte est séparée de la luminance et le gain est fortement compressé (\(\text{gain}^{0{,}03}\), rayon \(\times\ \text{gain}^{0{,}3}\)). Anti-aliasing&nbsp;: l’empreinte angulaire \(e\) du pixel sur le ciel est estimée par <code>dFdx</code>/<code>dFdy</code> de la direction finale (elle inclut lentille et aberration)&#8239;; chaque étoile gaussienne de rayon \(s\) est convoluée par le pixel, \(\sigma^2 = s^2 + (e/2)^2\), d’amplitude \((s^2/\sigma^2)^{1/2}\) (choix visuel, qui ne conserve pas le flux).</p>
+        <p><strong>Planètes.</strong> Coordonnées sphériques du point dans le repère propre, déformées par dix cisaillements alternés qui conservent l’aire (aspect fluide, animé par \(\tau\), technique inspirée de <a href="#ref15">[15]</a>), puis palette cosinus. Elles sont éclairées par une étoile moyenne dont la teinte est celle d’un corps noir à \(5500\,\mathcal D\) K&nbsp;: seule la teinte porte le Doppler, l’intensité \(\mathcal D^3\) est omise.</p>
+      </section>
+
+      <!-- ========== 4. Effets ========== -->
+      <section id="effets">
+        <h2><span class="num">4</span>Quelques effets observables</h2>
+
+        <figure>
+          <div class="gallery">
+            <div><a href="effets/a.jpg"><img src="effets/a.jpg" alt="Espace plat&nbsp;: deux planètes rayées et une sphère noire centrale presque invisible sur le fond étoilé" width="1276" height="718" loading="lazy"></a><strong>(a)</strong> Tout à 0&nbsp;: espace plat, lumière instantanée, le trou noir est une sphère noire.</div>
+            <div><a href="effets/b.jpg"><img src="effets/b.jpg" alt="Le fond étoilé est déformé autour du trou noir, une planète apparaît en anneau derrière lui" width="1276" height="718" loading="lazy"></a><strong>(b)</strong> <code>SPACE_IS_CURVE</code>&nbsp;: anneau d’Einstein <a href="#ref16">[16]</a>, planète vue en anneau derrière le trou noir, images secondaires.</div>
+            <div><a href="effets/c.jpg"><img src="effets/c.jpg" alt="Planète déformée en large croissant autour du trou noir" width="1272" height="714" loading="lazy"></a><strong>(c)</strong> + <code>LIGHT_AS_A_SPEED</code>&nbsp;: planètes vues en retard, plus longtemps quand elles s’éloignent.</div>
+            <div><a href="effets/d.jpg"><img src="effets/d.jpg" alt="Même scène avec une planète rouge à droite du trou noir et un croissant orangé à gauche" width="1276" height="718" loading="lazy"></a><strong>(d)</strong> + Doppler complet&nbsp;: planètes bleues à l’approche, rouges en s’éloignant.</div>
+            <div><a href="effets/e.jpg"><img src="effets/e.jpg" alt="Planète très aplatie en ellipse verticale" width="1266" height="702" loading="lazy"></a><strong>(e)</strong> <code>CONTRACTION_LONGUEURS</code>, lumière instantanée&nbsp;: planètes aplaties de \(1/\gamma\).</div>
+            <div><a href="effets/f.jpg"><img src="effets/f.jpg" alt="Planètes de nouveau rondes, aux rayures inclinées" width="1270" height="714" loading="lazy"></a><strong>(f)</strong> Contraction + temps de trajet&nbsp;: contour circulaire, sphère tournée (Terrell).</div>
+            <div><a href="effets/g.jpg"><img src="effets/g.jpg" alt="Disque bleui contenant le ciel et les planètes, entouré de noir" width="1270" height="712" loading="lazy"></a><strong>(g)</strong> <code>STATIC</code> près de l’horizon&nbsp;: le trou noir occupe presque tout le champ, le ciel est réduit à un disque bleui.</div>
+            <div><a href="effets/h.jpg"><img src="effets/h.jpg" alt="Vue depuis une planète&nbsp;: trou noir et ciel étirés sur la gauche de l'image" width="1276" height="718" loading="lazy"></a><strong>(h)</strong> Depuis la planète B&nbsp;: aberration, trou noir et ciel déformés.</div>
+          </div>
+          <figcaption class="dessous"><span class="tag">Figure 1</span> – Configurations des interrupteurs (<a href="#tab2">tableau 2</a>) qui isolent chaque effet.</figcaption>
+        </figure>
+
+        <p class="callout">Le lecteur est invité à jouer avec le shader&nbsp;: changer d’observateur, déplacer la caméra, activer et désactiver les effets ou modifier les constantes est la meilleure façon de se forger une intuition de la relativité.</p>
+      </section>
+
+      <!-- ========== 5. Discussion ========== -->
+      <section id="discussion">
+        <h2><span class="num">5</span>Discussion</h2>
+        <p><strong>Trou noir de Kerr.</strong> Passer à un trou noir en rotation <a href="#ref17">[17]</a> n’est pas immédiat, car toute la méthode repose sur l’observateur statique, qui sert d’intermédiaire entre le monde et chaque objet. Autour d’un trou noir de Kerr, l’entraînement de l’espace-temps par la rotation interdit de rester immobile dans l’ergosphère&nbsp;: l’observateur statique n’y existe plus. Il faudrait le remplacer par un observateur qui tourne avec l’espace-temps, et les conversions entre repères ne seraient plus de simples facteurs \(\sqrt f\).</p>
+      </section>
+
+      <!-- ========== Références ========== -->
+      <section id="references">
+        <h2>Références</h2>
+        <ol class="refs">
+          <li id="ref1"><a href="https://fr.wikipedia.org/wiki/Trou_noir_de_Schwarzschild">Trou noir de Schwarzschild</a></li>
+          <li id="ref2"><a href="https://fr.wikipedia.org/wiki/Effet_Shapiro">Effet Shapiro</a></li>
+          <li id="ref3"><a href="https://fr.wikipedia.org/wiki/Effet_Doppler_relativiste">Effet Doppler relativiste</a></li>
+          <li id="ref4"><a href="https://fr.wikipedia.org/wiki/Contraction_des_longueurs">Contraction des longueurs</a></li>
+          <li id="ref5"><a href="https://fr.wikipedia.org/wiki/Transformations_de_Lorentz">Transformations de Lorentz</a></li>
+          <li id="ref6"><a href="https://fr.wikipedia.org/wiki/M%C3%A9trique_de_Schwarzschild">Métrique de Schwarzschild</a></li>
+          <li id="ref7"><a href="https://fr.wikipedia.org/wiki/Dilatation_du_temps">Dilatation du temps</a></li>
+          <li id="ref8">R. Antonelli, <a href="https://rantonels.github.io/starless/"><em>Starless</em>, raytracer de trou noir (en)</a></li>
+          <li id="ref9"><a href="https://fr.wikipedia.org/wiki/Formules_de_Binet">Formules de Binet</a></li>
+          <li id="ref10"><a href="https://fr.wikipedia.org/wiki/M%C3%A9thode_d%27Euler_semi-implicite">Euler semi-implicite</a></li>
+          <li id="ref11"><a href="https://fr.wikipedia.org/wiki/D%C3%A9calage_d%27Einstein">Décalage d’Einstein</a></li>
+          <li id="ref12"><a href="https://fr.wikipedia.org/wiki/Temps_propre">Temps propre</a></li>
+          <li id="ref13"><a href="https://www.shadertoy.com/view/stBcW1">Shadertoy fond étoilé</a></li>
+          <li id="ref14"><a href="https://fr.wikipedia.org/wiki/Loi_de_Planck">Loi de Planck</a></li>
+          <li id="ref15"><a href="https://www.shadertoy.com/view/MdyfWw">Shadertoy texture fluide</a></li>
+          <li id="ref16"><a href="https://fr.wikipedia.org/wiki/Anneau_d%27Einstein">Anneau d’Einstein</a></li>
+          <li id="ref17"><a href="https://fr.wikipedia.org/wiki/Trou_noir_de_Kerr">Trou noir de Kerr</a></li>
+        </ol>
+      </section>
+    </main>
+  </article>
+</body>
+</html>
