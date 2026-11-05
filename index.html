@@ -53,10 +53,12 @@
       padding-bottom: 6px; margin-bottom: 16px; border-bottom: 1px solid var(--rule);
     }
     p + p { margin-top: 12px; }
+    #recherche p { text-align: justify; hyphens: auto; }
     ul { padding-left: 20px; }
     li + li { margin-top: 6px; }
 
     /* Papers */
+    .subtitle { margin: -6px 0 18px; color: var(--muted); font-size: .95rem; }
     .paper { margin-bottom: 18px; }
     .paper .title { font-weight: bold; }
     .paper .meta { color: var(--muted); font-size: .95rem; }
@@ -97,9 +99,11 @@
     .stages .date { display: block; color: var(--muted); font-size: .85rem; }
 
     /* Projets perso */
-    .project + .project { margin-top: 28px; }
-    .project img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 4px; }
-    .project .title { margin-top: 10px; font-weight: bold; font-size: 1.08rem; }
+    .project { border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; }
+    .project + .project { margin-top: 24px; }
+    .project .title { padding: 12px 18px; font-weight: bold; font-size: 1.08rem; }
+    .project img { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; object-fit: cover; }
+    .project .body { padding: 14px 18px 18px; }
     .project .desc { font-size: .95rem; }
     .project .refs { margin-top: 10px; font-size: .9rem; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; }
     .project .refs a + a::before { content: none; }
@@ -160,6 +164,7 @@
     <!-- ========== Papers ========== -->
     <section id="papers">
       <h2>Papers</h2>
+      <p class="subtitle">Cette liste n'est pas forcément à jour : la liste actualisée est sur <a href="https://scholar.google.com/citations?user=IxrPG0kAAAAJ">Google Scholar</a>.</p>
 
       <!-- Pour chaque papier : remplace l'image par ton teaser (ex. papers/hpg25/teaser.jpg dans le dépôt) -->
       <article class="pub">
@@ -181,8 +186,6 @@
           </div>
         </div>
       </article>
-
-      <p class="meta">Liste complète sur <a href="https://scholar.google.com/citations?user=IxrPG0kAAAAJ">Google Scholar</a>.</p>
     </section>
 
     <!-- ========== Enseignement ========== -->
@@ -193,14 +196,14 @@
         <div>
           <strong>3D Graphics</strong> <span class="kind">TD/TP</span>
           <div class="org">M1 - ENSIMAG <a href="https://chamilo.grenoble-inp.fr/courses/ENSIMAG4MMG3D6/">Fiche du cours</a></div>
-          <div class="org">M1 - Université Grenobles Alpes <a href="https://formations.univ-grenoble-alpes.fr/fr/offre-de-formation/master-XB/master-informatique-IAQK9B8Z/parcours-master-of-science-in-informatics-at-grenoble-mosig-IB9GGIRD/ue-3d-graphics-IFZBK20Z.html">Fiche du cours</a></div>
+          <div class="org">M1 - Université Grenoble Alpes <a href="https://formations.univ-grenoble-alpes.fr/fr/offre-de-formation/master-XB/master-informatique-IAQK9B8Z/parcours-master-of-science-in-informatics-at-grenoble-mosig-IB9GGIRD/ue-3d-graphics-IFZBK20Z.html">Fiche du cours</a></div>
         </div>
       </div>
       <div class="entry">
         <div class="date">2025 – 2026</div>
         <div>
           <strong>Algorithmique et programmation impérative</strong> <span class="kind">TD/TP</span>
-          <div class="org">L2 - Université Grenobles Alpes<a href="https://formations.univ-grenoble-alpes.fr/fr/catalogue-2021/licence-XA/licence-informatique-IAI7UC15/parcours-mathematiques-informatique-international-1re-et-2e-annee-grenoble-JF2DDBPK/ue-algorithmique-et-programmation-imperative-inf301-IGXR3MDR.html">Fiche du cours</a></div>
+          <div class="org">L2 - Université Grenoble Alpes <a href="https://formations.univ-grenoble-alpes.fr/fr/catalogue-2021/licence-XA/licence-informatique-IAI7UC15/parcours-mathematiques-informatique-international-1re-et-2e-annee-grenoble-JF2DDBPK/ue-algorithmique-et-programmation-imperative-inf301-IGXR3MDR.html">Fiche du cours</a></div>
         </div>
       </div>
       <div class="entry">
@@ -242,17 +245,20 @@
       <h2>Projets perso</h2>
       <!-- Pour chaque projet : crée un dossier dans projets/ et copie un bloc .project. -->
       <article class="project">
-        <a href="https://www.shadertoy.com/view/73tXRM"><img src="projets/space-and-time/space-and-time.jpg" alt="Trou noir entouré d'un arc de lumière orange et bleu, avec une planète bleutée à droite" width="1520" height="952" loading="lazy"></a>
         <div class="title">Space and Time</div>
-        <p class="desc">Rendu temps réel d'un trou noir de Schwarzschild et de planètes en orbite, pour mettre en évidence les effets relativistes : courbure de la lumière, effets Doppler, contraction des longueurs, aberration, temps propre. Chaque effet s'active séparément.</p>
-        <div class="refs">
-          <a class="cta" href="https://www.shadertoy.com/view/73tXRM">▶ Voir sur Shadertoy</a>
-          <a href="projets/space-and-time/space-and-time.pdf">documentation (pdf)</a>
+        <a href="https://www.shadertoy.com/view/73tXRM"><img src="projets/space-and-time/space-and-time.jpg" alt="Trou noir entouré d'un arc de lumière orange et bleu, avec une planète bleutée à droite" width="1520" height="952" loading="lazy"></a>
+        <div class="body">
+          <p class="desc">Rendu temps réel d'un trou noir de Schwarzschild et de planètes en orbite, pour mettre en évidence les effets relativistes : courbure de la lumière, effets Doppler, contraction des longueurs, aberration, temps propre. Chaque effet s'active séparément.</p>
+          <div class="refs">
+            <a class="cta" href="https://www.shadertoy.com/view/73tXRM">▶ Voir sur Shadertoy</a>
+            <a href="projets/space-and-time/space-and-time.pdf">documentation (pdf)</a>
+          </div>
         </div>
       </article>
     </section>
 
     <!-- ========== Divers ========== -->
+    <!-- Section masquée pour l'instant
     <section id="divers">
       <h2>Divers</h2>
       <p>En dehors de la recherche, j'aime :</p>
@@ -262,6 +268,7 @@
         <li><strong>Passion n°3</strong> : quelques mots.</li>
       </ul>
     </section>
+    -->
 
     <footer>© 2026 Pacôme Luton · Dernière mise à jour : novembre 2026</footer>
   </div>
