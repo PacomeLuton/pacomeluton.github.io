@@ -85,6 +85,9 @@
     .entry { display: grid; grid-template-columns: 130px 1fr; gap: 16px; margin-bottom: 14px; }
     .entry .date { color: var(--muted); }
     .entry .org { color: var(--muted); font-style: italic; }
+    .entry .kind { color: var(--muted); font-size: .9rem; }
+    .entry .org a { font-style: normal; font-size: .9rem; }
+    .entry .org a::before { content: " · "; color: var(--muted); }
 
     .stages { list-style: none; padding: 0; margin-top: 10px; font-size: .95rem; }
     .stages li { padding-left: 14px; border-left: 2px solid var(--rule); }
@@ -177,12 +180,26 @@
     <section id="enseignement">
       <h2>Enseignement</h2>
       <div class="entry">
-        <div class="date">2025 – 2026</div>
-        <div><strong>Nom du cours</strong> (TD / TP, xx h)<div class="org">Niveau, Établissement</div></div>
+        <div class="date">2024 – 2025</div>
+        <div>
+          <strong>3D Graphics</strong> <span class="kind">TD/TP</span>
+          <div class="org">M1 - ENSIMAG <a href="https://chamilo.grenoble-inp.fr/courses/ENSIMAG4MMG3D6/">Fiche du cours</a></div>
+          <div class="org">M1 - Université Grenobles Alpes <a href="https://formations.univ-grenoble-alpes.fr/fr/offre-de-formation/master-XB/master-informatique-IAQK9B8Z/parcours-master-of-science-in-informatics-at-grenoble-mosig-IB9GGIRD/ue-3d-graphics-IFZBK20Z.html">Fiche du cours</a></div>
+        </div>
       </div>
       <div class="entry">
         <div class="date">2025 – 2026</div>
-        <div><strong>Nom du cours</strong> (TD / TP, xx h)<div class="org">Niveau, Établissement</div></div>
+        <div>
+          <strong>Algorithmique et programmation impérative</strong> <span class="kind">TD/TP</span>
+          <div class="org">L2 - Université Grenobles Alpes<a href="https://formations.univ-grenoble-alpes.fr/fr/catalogue-2021/licence-XA/licence-informatique-IAI7UC15/parcours-mathematiques-informatique-international-1re-et-2e-annee-grenoble-JF2DDBPK/ue-algorithmique-et-programmation-imperative-inf301-IGXR3MDR.html">Fiche du cours</a></div>
+        </div>
+      </div>
+      <div class="entry">
+        <div class="date">2026 – 2027</div>
+        <div>
+          <strong>Intro à l’informatique visuelle</strong> <span class="kind">TD/TP</span>
+          <div class="org">M1 - ENSIMAG <a href="https://ensimag.grenoble-inp.fr/fr/formation/introduction-to-visual-computing-wmm7mo06">Fiche du cours</a></div>
+        </div>
       </div>
     </section>
 
