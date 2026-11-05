@@ -16,12 +16,15 @@
 @font-face { font-family: "LM Mono"; src: url(fonts/lm-mono10-regular.woff2) format("woff2"); font-display: swap; }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;   /* mêmes couleurs que la page d'accueil */
+  --papier: #161616;
+  --encre-texte: #e6e6e6;
+  --surligne: #4a4320;
   --col: 680px;
   --marge: 20px;
-  --link: #000080;   /* le bleu des liens hyperref du PDF */
-  --muted: #666;
-  --trait: #666;
+  --link: #78aeed;
+  --muted: #9a9a9a;
+  --trait: #9a9a9a;
   --serif: "LM Roman", "Latin Modern Roman", "CMU Serif", "Times New Roman", serif;
   --petit: "LM Roman 8", var(--serif);
   --caps: "LM Caps", var(--serif);
@@ -30,7 +33,7 @@
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-body { background: #fff; color: #000; font: .97rem/1.36 var(--serif); font-kerning: normal; }
+body { background: var(--papier); color: var(--encre-texte); font: .97rem/1.36 var(--serif); font-kerning: normal; }
 a { color: var(--link); text-decoration: none; }
 a:hover { text-decoration: underline; }
 code { font-family: var(--mono); font-size: .98em; }
@@ -61,7 +64,7 @@ h2 { margin: 1.5em 0 .5em; font-size: 1.3rem; }
 h3 { margin: 1.15em 0 .35em; font-size: 1.08rem; }
 .callout { margin-top: .8em; font-weight: bold; }
 [id] { scroll-margin-top: 14px; }
-li:target, .eq:target, figure:target { background: #fff6c8; }
+li:target, .eq:target, figure:target { background: var(--surligne); }
 
 /* Sommaire, dans la marge : n'existe que s'il y a la place à côté de la colonne */
 .toc { display: none; }
@@ -74,7 +77,7 @@ li:target, .eq:target, figure:target { background: #fff6c8; }
   .toc li { margin-bottom: 5px; }
   .toc ol ol { margin: 5px 0 8px 1.3em; }
   .toc a { color: var(--muted); }
-  .toc a:hover { color: #000; }
+  .toc a:hover { color: var(--encre-texte); }
 }
 
 /* Équations numérotées */
@@ -93,8 +96,8 @@ figcaption.dessous { margin-top: 10px; }
 .deux { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 18px; align-items: start; margin: 18px 0; }
 .deux figure { margin: 0; min-width: 0; overflow-x: auto; }
 
-table { width: 100%; margin-top: 5px; border-collapse: collapse; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; font-family: var(--petit); font-size: .72rem; line-height: 1.3; }
-th { font-weight: normal; text-align: left; border-bottom: .75px solid #000; }
+table { width: 100%; margin-top: 5px; border-collapse: collapse; border-top: 1.5px solid var(--encre-texte); border-bottom: 1.5px solid var(--encre-texte); font-family: var(--petit); font-size: .72rem; line-height: 1.3; }
+th { font-weight: normal; text-align: left; border-bottom: .75px solid var(--encre-texte); }
 th, td { padding: 2px 5px; vertical-align: top; white-space: nowrap; }
 th { padding-block: 3px; }
 th:first-child, td:first-child { padding-left: 0; }
@@ -103,7 +106,7 @@ tr:last-child td { padding-bottom: 4px; }
 .c { text-align: center; }
 @media (min-width: 720px) { #tab2 td:last-child { white-space: nowrap; } }
 /* Tableau 1 : deux tableaux entre les mêmes filets, empilés sur petit écran */
-.paire { display: grid; grid-template-columns: auto 1fr; align-items: start; column-gap: 12px; margin-top: 5px; border-top: 1.5px solid #000; border-bottom: 1.5px solid #000; }
+.paire { display: grid; grid-template-columns: auto 1fr; align-items: start; column-gap: 12px; margin-top: 5px; border-top: 1.5px solid var(--encre-texte); border-bottom: 1.5px solid var(--encre-texte); }
 .paire table { margin: 0; border: 0; font-size: .7rem; }
 .paire th, .paire td { padding-inline: 4px; }
 .paire th:first-child, .paire td:first-child { padding-left: 0; }
@@ -111,14 +114,14 @@ tr:last-child td { padding-bottom: 4px; }
 
 /* Boîtes colorées par repère, comme dans le PDF */
 .boite {
-  --bord: #8b8b8b; --fond: #f1f1f1; --encre: #666;
+  --bord: #8b8b8b; --fond: #262626; --encre: #ababab;
   padding: 5px 9px 6px; border: 1.5px solid var(--bord); border-radius: 4px; background: var(--fond);
   font-family: var(--petit); font-size: .8rem; line-height: 1.3; text-align: center;
 }
-.boite.observateur { --bord: #9373bb; --fond: #f2eef7; --encre: #664491; }
-.boite.monde { --bord: #4b7bbb; --fond: #e9eef7; --encre: #1a4c91; }
-.boite.local { --bord: #439b83; --fond: #e8f3f0; --encre: #116f55; }
-.boite.propre { --bord: #d37b53; --fond: #faefea; --encre: #aa4c22; }
+.boite.observateur { --bord: #9373bb; --fond: #272033; --encre: #bda3e0; }
+.boite.monde { --bord: #5a8ad0; --fond: #1b2636; --encre: #8fb6ea; }
+.boite.local { --bord: #439b83; --fond: #182b27; --encre: #7fcbb4; }
+.boite.propre { --bord: #d37b53; --fond: #33221a; --encre: #eba584; }
 .boite .rep { display: block; color: var(--encre); font-family: var(--caps); font-size: .92em; line-height: 1.2; }
 .boite strong { font-size: 1.1em; }
 .boite code { font-size: 1em; }
@@ -179,7 +182,7 @@ tr:last-child td { padding-bottom: 4px; }
 @media (max-width: 719.98px) {
   .deux { grid-template-columns: minmax(0, 1fr); row-gap: 20px; }
   .paire { grid-template-columns: minmax(0, 1fr); }
-  .paire table + table { border-top: .75px solid #000; }
+  .paire table + table { border-top: .75px solid var(--encre-texte); }
 
   .niveaux { grid-template-columns: minmax(0, 1fr); }
   .lien { position: relative; min-height: 48px; padding: 7px 0 7px 36px; text-align: left; }
@@ -229,7 +232,13 @@ tr:last-child td { padding-bottom: 4px; }
   body { font-size: 10pt; line-height: 1.25; }
   .bar, .toc { display: none; }
   .sheet { width: auto; padding: 0; }
-  a { color: #000080; }
+  /* Sur papier, encre noire : les navigateurs n'impriment pas les fonds sombres */
+  :root { color-scheme: light; --papier: #fff; --encre-texte: #000; --link: #000080; --muted: #555; --trait: #555; }
+  .boite { --fond: #fff; --encre: #333; }
+  .boite.observateur { --fond: #fff; --encre: #664491; }
+  .boite.monde { --fond: #fff; --encre: #1a4c91; }
+  .boite.local { --fond: #fff; --encre: #116f55; }
+  .boite.propre { --fond: #fff; --encre: #aa4c22; }
   figure, .boucle, .eq, .boite { break-inside: avoid; }
   h2, h3 { break-after: avoid; }
 }
