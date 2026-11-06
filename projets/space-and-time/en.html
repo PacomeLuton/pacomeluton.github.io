@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Space and Time · Pacôme Luton</title>
+  <meta name="description" content="Real-time rendering of a Schwarzschild black hole and orbiting planets, highlighting relativistic effects.">
+  <link rel="stylesheet" href="../projet.css">
+  <link rel="alternate" hreflang="fr" href="index.html">
+  <link rel="alternate" hreflang="en" href="en.html">
+  <!-- Équations : KaTeX lit les \( ... \) et \[ ... \] directement dans le HTML. -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.css" integrity="sha384-WwGtaC6ywCHxA5cstpj/3+xIZvTez8dq2IcBQaXRkenHZ7FVVq1ZROtURwfbtTlG" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.js" integrity="sha384-a1WQdjRj162i159OYq041X6I4K8NenkrI09LlPmiHg0YOb7CR+wJOraXwK9abpnE" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous" onload="renderMathInElement(document.body)"></script>
+</head>
+<body>
+  <nav class="bar">
+    <a href="../../en.html#projets">← Pacôme Luton</a>
+    <span class="lang"><a href="index.html" lang="fr" hreflang="fr">FR</a> · <span aria-current="page">EN</span></span>
+  </nav>
+
+  <nav class="toc" aria-label="Contents">
+    <ol>
+      <li><a href="#scene">1 Scene and usage</a></li>
+      <li><a href="#reperes">2 Three levels of frames</a></li>
+      <li><a href="#algorithme">3 Algorithm</a>
+        <ol>
+          <li><a href="#horloge">Clock and camera</a></li>
+          <li><a href="#marching">Marching</a></li>
+          <li><a href="#orbite">Planets: orbit</a></li>
+          <li><a href="#doppler">Doppler</a></li>
+          <li><a href="#temps-propre">Proper time</a></li>
+          <li><a href="#shading">Shading</a></li>
+        </ol>
+      </li>
+      <li><a href="#effets">4 Observable effects</a></li>
+      <li><a href="#discussion">5 Discussion</a></li>
+      <li><a href="#references">References</a></li>
+    </ol>
+  </nav>
+
+  <article class="sheet">
+
+    <header class="titre">
+      <h1>Space and Time</h1>
+      <p class="lead">Highlighting relativistic effects around a Schwarzschild black hole</p>
+      <p class="auteur">Pacôme LUTON, (LJK, UGA, INRIA)</p>
+      <p class="shader">Shader: <a href="https://www.shadertoy.com/view/73tXRM">https://www.shadertoy.com/view/73tXRM</a></p>
+    </header>
+
+    <a class="hero" href="https://www.shadertoy.com/view/73tXRM"><img src="space-and-time.jpg" alt="Black hole surrounded by an orange and blue arc of light, with a bluish planet on the right" width="1520" height="952"></a>
+
+    <main>
+
+      <!-- ========== 1. Scene ========== -->
+      <section id="scene">
+        <h2><span class="num">1</span>Scene and usage</h2>
+        <p>
+          The shader renders in real time a Schwarzschild black hole <a href="#ref1">[1]</a>, four planets on circular orbits and a background of stars at infinity, as seen by several observers. Its goal is to show and highlight as many relativistic effects as possible, from both special and general relativity. Each pixel casts a ray <em>backwards</em> through curved spacetime; the ray carries a position <em>and</em> a time. This yields the bending of light, its travel time (including the Shapiro effect <a href="#ref2">[2]</a>), Doppler effects <a href="#ref3">[3]</a>, length contraction <a href="#ref4">[4]</a>, aberration and the proper time of each object (Lorentz transformation <a href="#ref5">[5]</a>). Each effect has a switch in the <em>Common</em> tab (<a href="#tab2">table 2</a>), which makes it possible to isolate them (<a href="#effets">section 4</a>); the main constants of the scene can be adjusted (<a href="#tab3">table 3</a>).
+        </p>
+        <p>
+          <strong>Organisation.</strong> <em>Common</em> contains the physics (frames, Doppler, orbits, proper time) and the shading; <em>Image</em> contains the ray march; <em>Buffer A</em> stores from one frame to the next the camera orientation (mouse), the chosen observer and the height of the static observer (controls: <a href="#tab1">table 1</a>).
+        </p>
+
+        <figure id="tab1">
+          <figcaption><span class="tag">Table 1</span> – Controls (<em>Buffer A</em>): keys <code>1</code> to <code>7</code> choose the observer.</figcaption>
+          <div class="paire">
+            <table>
+              <thead><tr><th>Key</th><th>Observer (viewpoint)</th></tr></thead>
+              <tbody>
+                <tr><td><code>1</code></td><td>distant (<code>WORLD</code>, \(r = 18\)), default</td></tr>
+                <tr><td><code>2</code></td><td>centre of the black hole (black image)</td></tr>
+                <tr><td><code>3</code>–<code>6</code></td><td>on planet A to D (nearest to farthest)</td></tr>
+                <tr><td><code>7</code></td><td>static (<code>STATIC</code>), orientation reset</td></tr>
+              </tbody>
+            </table>
+            <table>
+              <thead><tr><th>Control</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td>↑↓</td><td>height \(r = h\,r_s\) of <code>STATIC</code>, \(1 &lt; h \le 30\) (default 1.2)</td></tr>
+                <tr><td>mouse</td><td><code>WORLD</code>: orbit around the black hole</td></tr>
+                <tr><td></td><td>others: turns the head in the proper frame</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </figure>
+
+        <div class="deux">
+          <figure id="tab2">
+            <figcaption><span class="tag">Table 2</span> – Physics switches (<em>Common</em>).</figcaption>
+            <table>
+              <thead><tr><th>Macro</th><th class="c">Default</th><th>Effect</th></tr></thead>
+              <tbody>
+                <tr><td><code>SPACE_IS_CURVE</code></td><td class="c">1</td><td>spacetime curvature (\(f\))</td></tr>
+                <tr><td><code>LIGHT_AS_A_SPEED</code></td><td class="c">1</td><td>light travel time</td></tr>
+                <tr><td><code>DOPPLER_CLASSIQUE</code></td><td class="c">1</td><td>factor \(1 + \vec\beta\cdot\hat d\)</td></tr>
+                <tr><td><code>DOPPLER_RESTREINT</code></td><td class="c">1</td><td>factor \(\gamma\)</td></tr>
+                <tr><td><code>DOPPLER_GRAVITATIONNEL</code></td><td class="c">1</td><td>factor \(1/\sqrt f\)</td></tr>
+                <tr><td><code>CONTRACTION_LONGUEURS</code></td><td class="c">1</td><td>Lorentz local \(\leftrightarrow\) proper</td></tr>
+                <tr><td><code>TEMPS_PROPRE</code></td><td class="c">1</td><td>observer's clock</td></tr>
+                <tr><td><code>PULSE</code></td><td class="c">1</td><td>pulsation in proper time</td></tr>
+              </tbody>
+            </table>
+          </figure>
+          <figure id="tab3">
+            <figcaption><span class="tag">Table 3</span> – Adjustable constants.</figcaption>
+            <table>
+              <thead><tr><th>Constant</th><th class="c">Value</th><th>Role</th></tr></thead>
+              <tbody>
+                <tr><td><code>C</code></td><td class="c">1</td><td>speed of light</td></tr>
+                <tr><td><code>RS</code></td><td class="c">1.4</td><td>Schwarzschild radius</td></tr>
+                <tr><td><code>TIME_SPEED</code></td><td class="c">10</td><td>speeds up the simulation</td></tr>
+                <tr><td><code>ACCELERATE_PLANETE</code></td><td class="c">4</td><td>factor on planet speed</td></tr>
+                <tr><td><code>PLANETES</code></td><td class="c"></td><td>radius \(a\), orbit \(R\), phase \(\phi_0\)</td></tr>
+              </tbody>
+            </table>
+          </figure>
+        </div>
+      </section>
+
+      <!-- ========== 2. Frames ========== -->
+      <section id="reperes">
+        <h2><span class="num">2</span>Three levels of frames</h2>
+        <p>The formulas of special relativity only hold in a frame where the metric is that of Minkowski at the point considered; the shader therefore works on three levels, and each transition involves only one effect.</p>
+
+        <figure class="niveaux">
+          <div class="boite monde"><span class="rep">level 1</span><strong>World</strong><br>Schwarzschild coordinates \((t, \vec x)\)<br>ray, positions, velocities \(d\vec x/dt\), marching</div>
+          <div class="lien"><strong>gravitation</strong> <span>only \(f\)</span><div class="fleche"></div><code>mondeVersLocal</code><code>betaLocale</code><code>directionMondeVersLocale</code></div>
+          <div class="boite local"><span class="rep">level 2</span><strong>Static local</strong><br>observer at rest at \(\vec x\)<br>special relativity: \(\vec\beta\), \(\gamma\), Doppler; a moving object appears contracted</div>
+          <div class="lien"><strong>velocity</strong> <span>only \(\vec\beta\)</span><div class="fleche"></div><code>ecartLocalVersPropre</code><code>directionPropreVersLocal</code><code>energiePhoton</code></div>
+          <div class="boite propre"><span class="rep">level 3</span><strong>Proper</strong><br>object or observer at rest<br>true shape (sphere), texture, emitted spectrum, proper time</div>
+        </figure>
+
+        <p><strong>World \(\leftrightarrow\) static local.</strong> The static observer has the same axes as the world; it measures \(d\tau = \sqrt f\,dt\) and radial lengths \(dr/\sqrt f\). With \(\vec k = d\vec x/d\lambda\) the velocity of the ray (<code>ray.dir</code>) <a href="#ref6">[6]</a>:</p>
+        <div class="eq" id="eq1">
+          <div class="math">\[\Delta\vec x_{\text{loc}} = \frac{\Delta x_r}{\sqrt f}\,\vec n + \Delta\vec x_\perp,\]\[\vec\beta = \frac1c\left(\frac{v_r}{f}\,\vec n + \frac{\vec v_\perp}{\sqrt f}\right)\]</div>
+          <span class="n">(1)</span>
+        </div>
+
+        <p><strong>Static local \(\leftrightarrow\) proper.</strong> This is special relativity, with the local velocity \(\vec\beta\) of the object and \(\gamma = (1-\beta^2)^{-1/2}\). Lorentz transformations <a href="#ref5">[5]</a>:</p>
+        <div class="eq" id="eq2">
+          <div class="math">\[c\,t' = \gamma\left(c\,t - \vec\beta\cdot\vec x\right),\]\[\vec x\,' = \vec x + (\gamma-1)(\vec x\cdot\hat\beta)\,\hat\beta - \gamma\,\vec\beta\,c\,t.\]</div>
+          <span class="n">(2)</span>
+        </div>
+        <p>From these the code derives the contraction of the planets <a href="#ref4">[4]</a>, the aberration of directions and the Doppler factor.</p>
+      </section>
+
+      <!-- ========== 3. Algorithm ========== -->
+      <section id="algorithme">
+        <h2><span class="num">3</span>Algorithm</h2>
+
+        <figure>
+          <ol class="algo">
+            <li class="boite"><span class="rep">camera frame</span><strong>1. Pixel</strong> (<code>generateRay</code>)<br>pixel direction, FOV \(75^\circ\)</li>
+            <li class="via"><strong>rotation</strong> <code>baseDepuisForward</code></li>
+            <li class="boite observateur"><span class="rep">observer's proper frame</span><strong>2. Orientation</strong> (<code>local2World</code>)<br>\(\hat d'\) in the world axes</li>
+            <li class="via"><strong>aberration</strong> <a href="#eq2">(2)</a>, <code>directionPropreVersLocal</code></li>
+            <li class="boite local"><span class="rep">static local at \(\vec x_o\)</span><strong>3. Aberration</strong><br>\(\hat d\) as seen by the static observer</li>
+            <li class="via"><strong>gravitation</strong> <a href="#eq1">(1)</a>, <code>directionLocalVersMonde</code></li>
+            <li class="boite monde"><span class="rep">world</span><strong>4. World ray</strong><br>\(\vec x_o,\ \vec k,\ t_o = \tau_o/(d\tau/dt)_o\)</li>
+            <li class="via"></li>
+            <li class="boucle">
+              <div class="boite monde marche"><span class="rep">world</span><strong>5. Marching</strong> (<code>traceRay</code>)<br>null geodesic and time \(t(\lambda)\)<br>stop: horizon, starry background or planet<span class="tour"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.5-3.5M13 1.5v3.2H9.8"/></svg>loop, step \(d\lambda\)</span></div>
+              <div class="renvoi aller">each planet, at each step</div>
+              <ol class="branche">
+                <li class="boite monde"><span class="rep">world</span>\(\Delta\vec x = \vec x - \vec x_c(t),\ \vec v(t)\)</li>
+                <li class="via gris"><code>mondeVersLocal</code></li>
+                <li class="boite local"><span class="rep">static local at \(\vec x_c\)</span>\(\Delta\vec x_{\text{loc}},\ \vec\beta\)</li>
+                <li class="via gris"><code>ecartLocalVersPropre</code></li>
+                <li class="boite propre"><span class="rep">planet's proper frame</span>sphere: \(d' = \lVert\Delta\vec x\,'\rVert - a\)</li>
+              </ol>
+              <div class="renvoi retour">\(d = d'\sqrt f/\gamma\)</div>
+            </li>
+            <li class="via"><strong>gravitation</strong> <a href="#eq1">(1)</a>, at \(\vec x_o\) and at the hit point</li>
+            <li class="boite local"><span class="rep">static local, at both ends</span><strong>6. Doppler</strong> (<code>energiePhoton</code>)<br>\(\mathcal D = E_o/E_e\)</li>
+            <li class="via"><strong>energy</strong> <a href="#eq2">(2)</a>, \(\times\,\gamma(1 + \vec\beta_e\cdot\hat d)\)</li>
+            <li class="boite propre"><span class="rep">source's proper frame</span><strong>7. Shading</strong><br>stars: black body at \(\mathcal D T\)<br>planets: texture, \(\tau\), pulsation</li>
+          </ol>
+        </figure>
+        <p>Each box has the colour of the frame in which the computed quantity lives; each annotated arrow is a change of frame.</p>
+
+        <h3 id="horloge"><span class="num">3.1</span>Clock and camera (steps 1 to 4)</h3>
+        <p>Time flows at the rate of the proper time \(\tau_o\) of the current observer. The factor</p>
+        <div class="eq" id="eq3">
+          <div class="math">\[\frac{d\tau}{dt} = \frac{\sqrt f}{\gamma}\]<span>(gravitational and kinematic dilation <a href="#ref7">[7]</a>)</span></div>
+          <span class="n">(3)</span>
+        </div>
+        <p>gives the time \(t_o = \tau_o/(d\tau/dt)_o\) of a fictitious distant observer: this world time is what is used to compute the positions of the objects. The pixel direction is rotated into the world axes (facing the black hole by default), corrected for aberration if the observer is moving, then converted to \(\vec k\) by <a href="#eq1">(1)</a>.</p>
+
+        <h3 id="marching"><span class="num">3.2</span>Marching (step 5)</h3>
+        <p><strong>Curved rays.</strong> As in the <em>Starless</em> raytracer <a href="#ref8">[8]</a>, the null geodesic is replaced by Newtonian motion under a fictitious force, with \(\vec L = \vec x\times\vec k\) conserved:</p>
+        <div class="eq" id="eq4">
+          <div class="math">\[\frac{d^2\vec x}{d\lambda^2} = -\frac32\,r_s\,L^2\,\frac{\vec x}{r^5},\]\[\frac{d(ct)}{d\lambda} = -\frac1f.\]</div>
+          <span class="n">(4)</span>
+        </div>
+        <p>The trajectory exactly satisfies the Binet equation <a href="#ref9">[9]</a> for photons, \(u'' + u = \tfrac32 r_s u^2\) \((u = 1/r)\). It is integrated with semi-implicit Euler <a href="#ref10">[10]</a> (velocity, then position with the new velocity), and the ray's time goes backwards at each step, which gives the travel time and the Shapiro effect.</p>
+        <p><strong>Sphere tracing.</strong> At each step, each planet is placed at the ray's time and the point is moved into its proper frame, where it is a motionless sphere (branch of step 5); the proper distance \(d'\) is brought back to the world frame by \(d = d'\sqrt f/\gamma\), and the step is \(\min(d/2,\ 0.05\,r)\). The factor \(1/2\) comes from the fact that the planets are moving: while the ray travels \(\ell\), a planet cannot get closer to it by more than \(\ell\), since it moves slower than light. The gap therefore shrinks by at most \(2\ell\), and a step of \(d/2\) never crosses it. The bound \(0.05\,r\) shortens the steps near the black hole, where the curvature <span class="nb">(in \(1/r^5\))</span> varies quickly and where large Euler steps would distort the trajectory.</p>
+
+        <h3 id="orbite"><span class="num">3.3</span>Planets: orbit</h3>
+        <p>The planets follow circular orbits around the black hole. The shader can speed them up to make the motion visible, but it bounds their local velocity so that it always stays below \(c\).</p>
+
+        <h3 id="doppler"><span class="num">3.4</span>Doppler (step 6)</h3>
+        <p>The energy of a photon received by an object is computed in the static local frame of its point, with <a href="#eq1">(1)</a> then <a href="#eq2">(2)</a>:</p>
+        <div class="eq" id="eq5">
+          <div class="math">\[E = \left(1 + \vec\beta\cdot\hat d\right)\,\gamma\,\frac{1}{\sqrt f},\]\[\mathcal D = \frac{E_o}{E_e},\]</div>
+          <span class="n">(5)</span>
+        </div>
+        <p>the three factors (classical, special <a href="#ref3">[3]</a>, gravitational <a href="#ref11">[11]</a>) being enabled separately by the three <code>DOPPLER_*</code> macros. \(E_o\) is evaluated at the camera, \(E_e\) at the hit point with the velocity of the planet at the emission time; for the stars, motionless at infinity, \(E_e = 1\).</p>
+
+        <h3 id="temps-propre"><span class="num">3.5</span>Proper time and pulsation</h3>
+        <p>The proper time <a href="#ref12">[12]</a> of a planet at the hit point is \(\tau = (d\tau/dt)\,t_e\), with \(t_e\) the emission time carried by the ray. To make the proper time of each object visible, we added a pulsation: \(\tau\) animates the texture and a pulsation \(p(\tau) = e^{-8\,\operatorname{frac}(\tau/T)}\) added to the colour; a disc at the bottom left beats with the same period in the observer's proper time. Since light transmits beats like any other frequency, a planet beats, as seen by the observer, \(\mathcal D\) times faster than this metronome (all effects enabled): blueshifted planets beat faster, redshifted ones more slowly.</p>
+
+        <h3 id="shading"><span class="num">3.6</span>Shading (step 7)</h3>
+        <p><strong>Stars.</strong> Technique close to <a href="#ref13">[13]</a>. The sky is divided into cells, and one star is placed randomly in each cell. Temperature drawn between 3000 and 10,000 K, colour from Planck's law <a href="#ref14">[14]</a> sampled at (610, 550, 465) nm. The Doppler effect only changes the temperature, because \(\mathcal D^3 L_\nu(\nu/\mathcal D, T) = L_\nu(\nu, \mathcal D T)\). Since the actual luminous gain spans several orders of magnitude, hue is separated from luminance and the gain is strongly compressed (\(\text{gain}^{0.03}\), radius \(\times\ \text{gain}^{0.3}\)). Anti-aliasing: the angular footprint \(e\) of the pixel on the sky is estimated by <code>dFdx</code>/<code>dFdy</code> of the final direction (it includes lensing and aberration); each Gaussian star of radius \(s\) is convolved with the pixel, \(\sigma^2 = s^2 + (e/2)^2\), with amplitude \((s^2/\sigma^2)^{1/2}\) (a visual choice, which does not conserve flux).</p>
+        <p><strong>Planets.</strong> Spherical coordinates of the point in the proper frame, warped by ten alternating area-preserving shears (fluid look, animated by \(\tau\), technique inspired by <a href="#ref15">[15]</a>), then a cosine palette. They are lit by an average star whose hue is that of a black body at \(5500\,\mathcal D\) K: only the hue carries the Doppler effect, the \(\mathcal D^3\) intensity is omitted.</p>
+      </section>
+
+      <!-- ========== 4. Effects ========== -->
+      <section id="effets">
+        <h2><span class="num">4</span>Some observable effects</h2>
+
+        <figure>
+          <div class="gallery">
+            <div><a href="effets/a.jpg"><img src="effets/a.jpg" alt="Flat space: two striped planets and a central black sphere almost invisible against the starry background" width="1276" height="718" loading="lazy"></a><strong>(a)</strong> All at 0: flat space, instantaneous light, the black hole is a black sphere.</div>
+            <div><a href="effets/b.jpg"><img src="effets/b.jpg" alt="The starry background is distorted around the black hole, a planet appears as a ring behind it" width="1276" height="718" loading="lazy"></a><strong>(b)</strong> <code>SPACE_IS_CURVE</code>: Einstein ring <a href="#ref16">[16]</a>, planet seen as a ring behind the black hole, secondary images.</div>
+            <div><a href="effets/c.jpg"><img src="effets/c.jpg" alt="Planet distorted into a wide crescent around the black hole" width="1272" height="714" loading="lazy"></a><strong>(c)</strong> + <code>LIGHT_AS_A_SPEED</code>: planets seen with a delay, longer as they recede.</div>
+            <div><a href="effets/d.jpg"><img src="effets/d.jpg" alt="Same scene with a red planet to the right of the black hole and an orange crescent to the left" width="1276" height="718" loading="lazy"></a><strong>(d)</strong> + full Doppler: planets blue as they approach, red as they recede.</div>
+            <div><a href="effets/e.jpg"><img src="effets/e.jpg" alt="Planet strongly flattened into a vertical ellipse" width="1266" height="702" loading="lazy"></a><strong>(e)</strong> <code>CONTRACTION_LONGUEURS</code>, instantaneous light: planets flattened by \(1/\gamma\).</div>
+            <div><a href="effets/f.jpg"><img src="effets/f.jpg" alt="Planets round again, with tilted stripes" width="1270" height="714" loading="lazy"></a><strong>(f)</strong> Contraction + travel time: circular outline, rotated sphere (Terrell).</div>
+            <div><a href="effets/g.jpg"><img src="effets/g.jpg" alt="Blueshifted disc containing the sky and the planets, surrounded by black" width="1270" height="712" loading="lazy"></a><strong>(g)</strong> <code>STATIC</code> near the horizon: the black hole fills almost the whole field of view, the sky is reduced to a blueshifted disc.</div>
+            <div><a href="effets/h.jpg"><img src="effets/h.jpg" alt="View from a planet: black hole and sky stretched towards the left of the image" width="1276" height="718" loading="lazy"></a><strong>(h)</strong> From planet B: aberration, black hole and sky distorted.</div>
+          </div>
+          <figcaption class="dessous"><span class="tag">Figure 1</span> – Switch configurations (<a href="#tab2">table 2</a>) isolating each effect.</figcaption>
+        </figure>
+
+        <p class="callout">The reader is invited to play with the shader: changing the observer, moving the camera, toggling the effects or modifying the constants is the best way to build an intuition for relativity.</p>
+      </section>
+
+      <!-- ========== 5. Discussion ========== -->
+      <section id="discussion">
+        <h2><span class="num">5</span>Discussion</h2>
+        <p><strong>Kerr black hole.</strong> Moving to a rotating black hole <a href="#ref17">[17]</a> is not straightforward, because the whole method relies on the static observer, which acts as an intermediary between the world and each object. Around a Kerr black hole, the dragging of spacetime by the rotation makes it impossible to stay at rest inside the ergosphere: the static observer no longer exists there. It would have to be replaced by an observer rotating with spacetime, and the conversions between frames would no longer be simple \(\sqrt f\) factors.</p>
+      </section>
+
+      <!-- ========== References ========== -->
+      <section id="references">
+        <h2>References</h2>
+        <ol class="refs">
+          <li id="ref1"><a href="https://en.wikipedia.org/wiki/Schwarzschild_black_hole">Schwarzschild black hole</a></li>
+          <li id="ref2"><a href="https://en.wikipedia.org/wiki/Shapiro_time_delay">Shapiro time delay</a></li>
+          <li id="ref3"><a href="https://en.wikipedia.org/wiki/Relativistic_Doppler_effect">Relativistic Doppler effect</a></li>
+          <li id="ref4"><a href="https://en.wikipedia.org/wiki/Length_contraction">Length contraction</a></li>
+          <li id="ref5"><a href="https://en.wikipedia.org/wiki/Lorentz_transformation">Lorentz transformation</a></li>
+          <li id="ref6"><a href="https://en.wikipedia.org/wiki/Schwarzschild_metric">Schwarzschild metric</a></li>
+          <li id="ref7"><a href="https://en.wikipedia.org/wiki/Time_dilation">Time dilation</a></li>
+          <li id="ref8">R. Antonelli, <a href="https://rantonels.github.io/starless/"><em>Starless</em>, black hole raytracer</a></li>
+          <li id="ref9"><a href="https://en.wikipedia.org/wiki/Binet_equation">Binet equation</a></li>
+          <li id="ref10"><a href="https://en.wikipedia.org/wiki/Semi-implicit_Euler_method">Semi-implicit Euler</a></li>
+          <li id="ref11"><a href="https://en.wikipedia.org/wiki/Gravitational_redshift">Gravitational redshift</a></li>
+          <li id="ref12"><a href="https://en.wikipedia.org/wiki/Proper_time">Proper time</a></li>
+          <li id="ref13"><a href="https://www.shadertoy.com/view/stBcW1">Shadertoy starry background</a></li>
+          <li id="ref14"><a href="https://en.wikipedia.org/wiki/Planck%27s_law">Planck's law</a></li>
+          <li id="ref15"><a href="https://www.shadertoy.com/view/MdyfWw">Shadertoy fluid texture</a></li>
+          <li id="ref16"><a href="https://en.wikipedia.org/wiki/Einstein_ring">Einstein ring</a></li>
+          <li id="ref17"><a href="https://en.wikipedia.org/wiki/Kerr_metric">Kerr black hole</a></li>
+        </ol>
+      </section>
+    </main>
+  </article>
+</body>
+</html>
